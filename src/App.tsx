@@ -11,6 +11,7 @@ import { OVERVIEW, ZONES } from './scene/layout'
 import { ProjectPanel } from './ui/ProjectPanel'
 import { BackButton } from './ui/BackButton'
 import { CornerMenu } from './ui/CornerMenu'
+import { Boat } from './zones/Boat/Boat'
 import { projects, type ProjectId } from './data/projects'
 
 export default function App() {
@@ -45,6 +46,7 @@ export default function App() {
         {/* Zones go here, e.g. <CoralReef position={ZONES['coral-reef'].position} onSelect={setSelected} />.
             Until then, temporary posts mark the zone spots. */}
         <ZoneMarkers onSelect={select} />
+        <Boat position={ZONES['knot-tying']!.position} onSelect={select} />
 
         <CameraRig view={view} />
       </Canvas>

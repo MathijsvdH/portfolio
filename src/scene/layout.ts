@@ -25,10 +25,12 @@ export type ZoneLayout = {
 // Internship has no zone yet (idea still open), so this is Partial.
 // Free room for it later: south-west lowlands, or the mountain's shoulder.
 export const ZONES: Partial<Record<ProjectId, ZoneLayout>> = {
-  // East beach, the jetty goes ~20 m out into the water.
+  // East beach: the jetty starts on the sand and runs 20 m due east out to sea.
+  // At z = -10 the shore runs straight north-south, so due east is square to the beach.
+  // Position is at sea level (y = 0), not on the ground: the jetty measures from the water.
   'knot-tying': {
-    position: onGround(104, 0),
-    camera: { position: [150, 30, 45], target: [110, 0, 0] },
+    position: [104.5, 0, -10],
+    camera: { position: [140, 14, 22], target: [112, 4, -8] },
   },
   // Shallow lagoon (1-2 m deep) in the south-east cove.
   'coral-reef': {
