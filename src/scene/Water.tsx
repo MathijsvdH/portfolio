@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { SEABED, TERRAIN_SIZE, terrainHeight } from './islandShape'
 import { PALETTE } from './palette'
+import { REEF_AREA } from './layout'
 
 // The sea: one flat plane at sea level (y = 0) with its own small shader.
 // A shader is a tiny program that runs on the graphics card for every pixel, so the
@@ -11,6 +12,7 @@ import { PALETTE } from './palette'
 
 const MAP_TEXELS = 384 // depth map resolution: one value every ~0.9 m
 const MAX_DEPTH = -SEABED // 12 m: the open sea, and everything outside the depth map
+
 
 // The shader can't call terrainHeight() itself, so we measure the water depth once
 // and store it in a small greyscale image (a "depth map") that the shader reads.
@@ -54,6 +56,8 @@ const fragmentShader = /* glsl */ `
   uniform vec3 uShallow;
   uniform vec3 uDeep;
   uniform vec3 uFoam;
+  uniform vec4 uClearArc; // strip with extra-clear water (the coral reef): from/to angle, inner/outer distance
+  uniform vec3 uClearColor;
   varying vec2 vWorld;
 
   // Smooth random values (value noise), same idea as in islandShape.ts.
@@ -75,6 +79,16 @@ const fragmentShader = /* glsl */ `
     float deep = smoothstep(0.0, 9.0, depth);
     vec3 color = mix(uShallow, uDeep, pow(deep, 0.7));
     float alpha = mix(0.68, 0.95, deep);
+
+    // Extra-clear over the coral reef, so its colours show through. The reef is a curved
+    // strip along the coast, so check the angle and distance from the island's centre,
+    // fading out towards the edges of the strip.
+    float angle = atan(vWorld.y, vWorld.x);
+    float dist = length(vWorld);
+    float clear = smoothstep(uClearArc.x, uClearArc.x + 0.15, angle) * (1.0 - smoothstep(uClearArc.y - 0.15, uClearArc.y, angle))
+                * smoothstep(uClearArc.z, uClearArc.z + 8.0, dist) * (1.0 - smoothstep(uClearArc.w - 8.0, uClearArc.w, dist));
+    alpha = mix(alpha, 0.45, clear);
+    color = mix(color, uClearColor, clear * 0.6); // a bluer tint, so the sand below doesn't look muddy
 
     // Ripples: thin bright lines where two drifting noise patterns cross a value.
     vec2 p = vWorld * 0.08;
@@ -113,6 +127,15 @@ export function Water() {
       uShallow: { value: new THREE.Color(PALETTE.waterShallow) },
       uDeep: { value: new THREE.Color(PALETTE.waterDeep) },
       uFoam: { value: new THREE.Color(PALETTE.foam) },
+      uClearArc: {
+        value: new THREE.Vector4(
+          THREE.MathUtils.degToRad(REEF_AREA.from),
+          THREE.MathUtils.degToRad(REEF_AREA.to),
+          REEF_AREA.inner,
+          REEF_AREA.outer,
+        ),
+      },
+      uClearColor: { value: new THREE.Color(PALETTE.waterClear) },
     }),
     [],
   )

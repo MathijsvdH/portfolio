@@ -13,6 +13,7 @@ export const PALETTE = {
   // Water: light turquoise in the shallows, deep blue further out, white foam
   waterShallow: '#3fd0c8',
   waterDeep: '#1a74c0',
+  waterClear: '#1fbfe0', // the extra-clear water over the coral reef
   foam: '#ffffff',
 
   // Sky: the horizon colour is also the fog colour, so far things fade into the sky

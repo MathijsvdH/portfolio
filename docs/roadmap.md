@@ -97,14 +97,21 @@ Besides the projects, the site has the usual portfolio things:
   off for visitors with "reduce motion" on.
 
 **C. Places** (one step each, `new-zone` skill, simple shapes first, life-size)
-- [ ] 7. Boat + jetty. First version in `src/zones/Boat/Boat.tsx`: a 20 m jetty from the
+- [x] 7. Boat + jetty. First version in `src/zones/Boat/Boat.tsx`: a 20 m jetty from the
   east beach (z = -10, where the shore runs straight north-south) due east out to sea, posts
   down to the seabed, and a ~9.5 m sailboat (13.6 m mast, curved sails, rigging, railing,
   fenders, three mooring lines) on the south side. Fishing gear around it: nets drying on a
   rack, a net pile, crates, a line of floats. Invisible hitboxes make the gaps clickable too.
   Split into `Jetty`, `Sailboat`, `FishingGear`, shared sizes/helpers in `parts.ts`.
-  Being tuned with Mathijs (placement, alignment, look).
-- [ ] 8. Coral reef
+  Good for now; may get tweaks once the other zones exist.
+- [x] 8. Coral reef. First version in `src/zones/CoralReef/CoralReef.tsx`: a strip of nine
+  reef patches along the SE coast (`REEF_AREA` in `layout.ts`: 26-64 degrees around the
+  island), each placed where the water is 1-2.5 m deep, with sandy channels between them.
+  Brain, branching and table coral, tube sponges, sea fans, sea grass and starfish, scattered
+  with a fixed random seed and merged into one mesh per colour. Rocks break the surface by the
+  shore, and a dive raft with a "diver down" flag floats by the reef. The water is extra clear
+  (and a bit bluer) over the same strip, so the colours show through (`uClearArc` in `Water.tsx`).
+  Good for now; may get tweaks once the other zones exist.
 - [ ] 9. Wildlife
 - [ ] 10. Robot corner
 - [ ] 11. Home on the south beach (opens About / Socials / CV / Skills, same as the menu)

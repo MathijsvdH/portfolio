@@ -24,6 +24,11 @@ export type ZoneLayout = {
 
 // Internship has no zone yet (idea still open), so this is Partial.
 // Free room for it later: south-west lowlands, or the mountain's shoulder.
+// The coral reef follows the coast: a curved strip of sea around the island, between
+// these angles (degrees, 0 = east, 90 = south) and distances (m) from the island's centre.
+// The reef places its corals in it, and the water is extra clear over it.
+export const REEF_AREA = { from: 26, to: 64, inner: 78, outer: 125 }
+
 export const ZONES: Partial<Record<ProjectId, ZoneLayout>> = {
   // East beach: the jetty starts on the sand and runs 20 m due east out to sea.
   // At z = -10 the shore runs straight north-south, so due east is square to the beach.
@@ -32,10 +37,12 @@ export const ZONES: Partial<Record<ProjectId, ZoneLayout>> = {
     position: [104.5, 0, -10],
     camera: { position: [140, 14, 22], target: [112, 4, -8] },
   },
-  // Shallow lagoon (1-2 m deep) in the south-east cove.
+  // Shallow lagoon (1-2.5 m deep) in the south-east cove. The reef itself is a strip
+  // along the coast (REEF_AREA below); this is its middle.
+  // Position is at sea level (y = 0): the corals sit on the seabed below it.
   'coral-reef': {
-    position: onGround(66, 66),
-    camera: { position: [105, 35, 115], target: [66, -1, 66] },
+    position: [74, 0, 74],
+    camera: { position: [114, 38, 118], target: [70, -1.5, 70] },
   },
   // Meadow on the northern lowlands, above the sea cliffs.
   'animal-classification': {
