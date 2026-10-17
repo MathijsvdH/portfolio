@@ -1,0 +1,10 @@
+# Use LF line endings for text files, in the repo and on disk, on every OS
+* text=auto eol=lf
+
+# Binary files: never touch line endings
+*.glb binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
