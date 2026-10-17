@@ -169,8 +169,17 @@ Besides the projects, the site has the usual portfolio things:
     Remove it in step 13.
   - Credits: README and `public/models/LICENSE-kenney-nature-kit.txt`.
 - [ ] 13. **Nature scatter**: trees, rocks, flowers with drei `Instances`, placed with
-  `heightAt`; zones kept clear.
+  `heightAt`; zones kept clear. **Postponed to the end:** a first try (rules from the
+  ground colours, ~730 items, plain `InstancedMesh`) was reverted on 2026-10-18; Mathijs
+  didn't like the look. Revisit once the zones are upgraded.
 - [ ] 14. **Zone upgrades**: placeholder shapes → models, one zone per step.
+  - [x] Wildlife: the forest ring (60 trees: kit pines and leafy trees), rocks, flower
+    clumps with grass, and the fallen log (the kit's log stretched to 4.5 m) are kit
+    models, merged into the zone's meshes like its own shapes, so the hover glow still
+    works. Helpers in `src/zones/Wildlife/parts.ts`: `model()` adds a model,
+    `trunkRadius()` measures the camera tree's trunk so the trail camera's strap fits.
+    Animals and the trail camera stay hand-built (the kit has none). Wrapped in
+    `<Suspense>` in `App.tsx`, because it waits for the model file.
 - [ ] 15. **Life**: sway, bobbing, birds, fish, the robot trying and failing (`useFrame`).
 - [ ] 16. **Labels**: hover name tags (with `ScreenAnchors`, like Home's tags), small signposts.
 

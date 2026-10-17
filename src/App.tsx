@@ -80,7 +80,10 @@ export default function App() {
         <ZoneMarkers onSelect={select} />
         <Boat position={ZONES['knot-tying']!.position} onSelect={select} />
         <CoralReef position={ZONES['coral-reef']!.position} onSelect={select} />
-        <Wildlife position={ZONES['animal-classification']!.position} onSelect={select} />
+        {/* Suspense: Wildlife waits for the model file, the rest of the island doesn't. */}
+        <Suspense fallback={null}>
+          <Wildlife position={ZONES['animal-classification']!.position} onSelect={select} />
+        </Suspense>
         <RobotCorner position={ZONES.robotics!.position} onSelect={select} />
         <Home position={HOME.position} place={selected} onSelect={select} />
 

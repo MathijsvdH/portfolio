@@ -2,25 +2,15 @@ import * as THREE from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { heightAt } from '../../scene/islandShape'
 import type { Vec3 } from '../../scene/layout'
+import type { Model } from '../../scene/models'
 
-// Colours, helpers and the meadow's scenery (trees, flowers, log, rocks, trail camera).
+// Colours, helpers and the trail camera. The trees, rocks, flowers and the log are models
+// from the kit (src/scene/models.ts), added with model().
 // Zone coordinates: `origin` is the zone's position on the ground, +x is east, +z is south.
 // The animals are in animals.ts.
 
 export const COLORS = {
-  trunk: '#7a5232',
-  pine: '#2f6b3a',
-  pineLight: '#3d8044',
-  leaves: '#4f9a3c',
-  leavesLight: '#6fb04a',
-  bark: '#8a6440',
-  barkInside: '#d9b07a',
-  rock: '#9a9286',
-  stem: '#4a8a36',
   white: '#fbf6ea',
-  yellow: '#ffd23a',
-  purple: '#9a5ad8',
-  red: '#e8402e',
   camo: '#55583a',
   camoDark: '#3a3c28',
   lens: '#1c1e22',
@@ -99,63 +89,36 @@ export class Pieces {
 }
 
 // ---------- scenery ----------
-// Each one stands on the ground at y = 0; `m` places, turns and scales it.
 
-// Pine: a trunk with three stacked cones. About 11 m tall at scale 1.
-export function pine(p: Pieces, m: THREE.Matrix4, rand: Rand) {
-  p.add(COLORS.trunk, new THREE.CylinderGeometry(0.22, 0.35, 4, 6), m.clone().multiply(place([0, 2, 0])))
-  const tiers: [number, number, number][] = [
-    [3, 3.2, 4.8], // bottom height, radius, cone height
-    [5.4, 2.5, 4],
-    [7.6, 1.7, 3.6],
-  ]
-  const color = rand() < 0.5 ? COLORS.pine : COLORS.pineLight
-  for (const [y, r, h] of tiers) {
-    p.add(color, new THREE.ConeGeometry(r, h, 7), m.clone().multiply(place([0, y + h / 2, 0], [0, rand() * 3, 0])))
+// A model from the kit, added like any other piece: `m` places, turns and scales it.
+// Its shapes are copied, because Pieces.add uses up what it's given.
+export function model(p: Pieces, { parts }: Model, m: THREE.Matrix4) {
+  for (const { color, geometry } of parts) p.add(color, geometry.clone(), m)
+}
+
+// How thick a model is at height y (m, at scale 1): a horizontal cut through it at that
+// height, and the farthest point of the cut from the model's middle line. For a tree low
+// down, that's its trunk. The cut points are where the triangles' edges cross height y.
+export function trunkRadius({ parts }: Model, y: number) {
+  let radius = 0
+  const a = new THREE.Vector3()
+  const b = new THREE.Vector3()
+  for (const { geometry } of parts) {
+    const pos = geometry.getAttribute('position')
+    const index = geometry.index
+    const triangles = (index ? index.count : pos.count) / 3
+    const corner = (t: number, k: number) => (index ? index.getX(t * 3 + k) : t * 3 + k)
+    for (let t = 0; t < triangles; t++) {
+      for (let k = 0; k < 3; k++) {
+        a.fromBufferAttribute(pos, corner(t, k))
+        b.fromBufferAttribute(pos, corner(t, (k + 1) % 3))
+        if ((a.y - y) * (b.y - y) > 0 || a.y === b.y) continue // this edge doesn't cross y
+        a.lerp(b, (y - a.y) / (b.y - a.y))
+        radius = Math.max(radius, Math.hypot(a.x, a.z))
+      }
+    }
   }
-}
-
-// Leafy tree: a trunk with a few round blobs of leaves. About 8 m tall at scale 1.
-export function leafyTree(p: Pieces, m: THREE.Matrix4, rand: Rand) {
-  p.add(COLORS.trunk, stick([0, 0, 0], [0.2, 4.2, 0], 0.4, 0.25), m)
-  const color = rand() < 0.5 ? COLORS.leaves : COLORS.leavesLight
-  const blobs: [number, number, number, number][] = [
-    [0.2, 5.6, 0, 2.6],
-    [1.5, 4.9, 0.6, 1.8],
-    [-1.2, 5.0, -0.7, 1.9],
-    [0.4, 6.8, -0.5, 1.7],
-  ]
-  for (const [x, y, z, r] of blobs) {
-    p.add(color, new THREE.IcosahedronGeometry(r * (0.9 + rand() * 0.2), 0), m.clone().multiply(place([x, y, z], [rand(), rand(), rand()])))
-  }
-}
-
-// A clump of wild flowers: thin stems with a coloured head on each. About 40 cm tall.
-export function flowers(p: Pieces, color: string, m: THREE.Matrix4, rand: Rand) {
-  const count = 6 + Math.floor(rand() * 5)
-  for (let i = 0; i < count; i++) {
-    const a = rand() * Math.PI * 2
-    const d = rand() * 0.5
-    const x = Math.cos(a) * d
-    const z = Math.sin(a) * d
-    const h = 0.25 + rand() * 0.25
-    p.add(COLORS.stem, stick([x, 0, z], [x, h, z], 0.015, 0.01, 3), m)
-    p.add(color, new THREE.IcosahedronGeometry(0.07, 0), m.clone().multiply(place([x, h, z])))
-  }
-}
-
-// A fallen tree trunk lying on the grass, with the cut end showing. Length in metres.
-export function fallenLog(p: Pieces, m: THREE.Matrix4, length: number) {
-  const r = 0.38
-  p.add(COLORS.bark, new THREE.CylinderGeometry(r, r * 1.1, length, 8), m.clone().multiply(place([0, r * 0.9, 0], [0, 0, Math.PI / 2])))
-  p.add(COLORS.barkInside, new THREE.CircleGeometry(r * 0.92, 8), m.clone().multiply(place([length / 2 + 0.005, r * 0.9, 0], [0, Math.PI / 2, 0])))
-  // A broken-off branch.
-  p.add(COLORS.bark, stick([0.6, r * 1.5, 0], [1.1, r * 1.5 + 0.9, 0.3], 0.09, 0.05, 5), m)
-}
-
-// A lumpy rock. Low detail on purpose: the flat faces give the low-poly look.
-export function rock(p: Pieces, m: THREE.Matrix4) {
-  p.add(COLORS.rock, new THREE.IcosahedronGeometry(1, 0), m)
+  return radius
 }
 
 // Trail camera (camera trap): a camouflage box strapped to a tree trunk, looking out at

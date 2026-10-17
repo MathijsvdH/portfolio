@@ -7,7 +7,7 @@ Each project gets a place on the island. Update the status column as zones get b
 | Island base | (none) | Real-size terrain with a rocky mountain, water, sky, camera controls | in progress |
 | Coral reef | Coral reef project | Reef in the shallow lagoon of the south-east cove | placeholder |
 | Boat | Knot-tying project | Life-size boat (~8 m) at a jetty on the east beach, rope and knots on deck; maybe a fishing cabin | placeholder |
-| Wildlife | Animal classification | Life-size animals in the northern meadow/forest, maybe with labels when you hover | placeholder |
+| Wildlife | Animal classification | Life-size animals in the northern meadow/forest, maybe with labels when you hover | placeholder (scenery from kit models, animals still simple shapes) |
 | Robot corner | Robotics project | Workshop on the west headland: two pick-and-place robot arms side by side, comparing ACT and flow matching on the same task | placeholder |
 | (open) | Internship | Idea still open, to decide. No spot reserved yet | todo |
 | Home | (personal info, not a project) | Where the site starts: a welcome hut on the south beach. The things around it are the content: welcome sign (About me), notice board (skills, CV), mailbox with postcards (socials), and an island map with a pin per zone | placeholder |

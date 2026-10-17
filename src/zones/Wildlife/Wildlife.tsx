@@ -2,14 +2,17 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 import type { ProjectId } from '../../data/projects'
 import type { Vec3 } from '../../scene/layout'
+import type { ModelName } from '../../scene/modelList'
+import { useModels, type Model } from '../../scene/models'
 import { useZoneHover } from '../../scene/useZoneHover'
 import { deer, fox, hedgehog, rabbit, robin } from './animals'
 import { Paint } from './Paint'
-import { COLORS, Pieces, fallenLog, flowers, groundY, leafyTree, pine, place, random, rock, trailCamera } from './parts'
+import { Pieces, groundY, model, place, random, trailCamera, trunkRadius } from './parts'
 
 // Wildlife zone: a meadow on the northern lowlands, ringed by forest on three sides and
 // open to the sea cliffs in the north. Deer, a fox, rabbits, a hedgehog and robins on a
-// fallen log, and a trail camera on a tree watching them. Placeholder shapes, life-size.
+// fallen log, and a trail camera on a tree watching them. Life-size. The trees, rocks,
+// flowers and the log are models from the kit; the animals and the camera are built here.
 //
 // Zone coordinates: `position` is the middle of the meadow on the ground, +x is east,
 // +z is south (towards the mountain). Shapes are in parts.ts and animals.ts.
@@ -18,7 +21,7 @@ const SEED = 9 // change it for a different (but always the same) random meadow
 
 // The open meadow: an oval of this size (half-widths in metres) around the middle.
 const MEADOW = { x: 24, z: 11 }
-const TREE_COUNT = 42
+const TREE_COUNT = 60
 
 // Animals: [x, z, turn]. Turn is in radians: 0 faces east, PI / 2 faces north.
 const STAG: Vec3 = [-4, -3, 0.5]
@@ -30,6 +33,7 @@ const RABBITS: Vec3[] = [
   [4, -8, -0.4],
 ]
 const LOG: Vec3 = [-15, 2, 0.35] // a fallen tree, 4.5 m long
+const LOG_SIZE = { length: 4.5, height: 0.72 } // the robins sit on top
 const HEDGEHOG: Vec3 = [-12.6, 3.6, -0.6]
 const ROCKS: [number, number, number][] = [
   [17, -9, 1.2],
@@ -40,7 +44,16 @@ const ROCKS: [number, number, number][] = [
 
 // The tree with the trail camera, at the meadow's edge, and what the camera looks at.
 const CAMERA_TREE: [number, number] = [9, 7]
+const CAMERA_TREE_MODEL: ModelName = 'tree_default'
 const CAMERA_LOOKS_AT = STAG
+
+// Which kit models make the forest, the rocks and the flowers. A name twice is picked twice
+// as often.
+const PINES: ModelName[] = ['tree_pineRoundA', 'tree_pineTallA_detailed', 'tree_cone', 'tree_pineRoundA']
+const LEAFY: ModelName[] = ['tree_default', 'tree_oak', 'tree_fat', 'tree_detailed', 'tree_tall']
+const STONES: ModelName[] = ['stone_largeA', 'stone_largeB', 'stone_tallA']
+const FLOWERS: ModelName[] = ['flower_redA', 'flower_yellowA', 'flower_purpleA']
+const GRASS: ModelName[] = ['grass', 'grass_large']
 
 // Invisible hitbox: a sheet draped over the meadow and the forest around it, this far
 // above the ground. Covers x and z from..to, one point every HIT_STEP metres.
@@ -60,7 +73,9 @@ export function Wildlife({ position, onSelect }: Props) {
   // dark trees get brighter instead of greyer.
   const glow = hovered ? 0.3 : 0
 
-  const meshes = useMemo(() => buildMeadow(position), [position])
+  // The kit's models. This waits ("suspends") until the model file has loaded.
+  const models = useModels()
+  const meshes = useMemo(() => buildMeadow(position, models), [position, models])
   const hitbox = useMemo(() => hitSheet(position), [position])
 
   return (
@@ -119,10 +134,11 @@ function hitSheet(origin: Vec3) {
 
 // Places the trees, flowers, animals and the rest, and merges it all into one mesh per
 // colour. Runs once.
-function buildMeadow(origin: Vec3) {
+function buildMeadow(origin: Vec3, models: Record<ModelName, Model>) {
   const rand = random(SEED)
   const pieces = new Pieces()
   const onGround = (x: number, z: number, lift = 0) => new THREE.Vector3(x, groundY(origin, x, z) + lift, z)
+  const one = (list: ModelName[]) => models[list[Math.floor(rand() * list.length)]!]
 
   // Forest around the meadow: on the west, south and east sides, not on the cliff side.
   const trees: [number, number][] = [CAMERA_TREE]
@@ -132,38 +148,49 @@ function buildMeadow(origin: Vec3) {
     if (inMeadow(x, z, 1.15) || !inMeadow(x, z, 2.1)) continue
     if (z < -4) continue // keep the view from the north open
     if (groundY(origin, x, z) < -12 || slope(origin, x, z) > 0.6) continue // not down the cliffs
-    if (trees.some(([tx, tz]) => Math.hypot(tx - x, tz - z) < 4.5)) continue
+    if (trees.some(([tx, tz]) => Math.hypot(tx - x, tz - z) < 3.8)) continue
     trees.push([x, z])
   }
   for (const [i, [x, z]] of trees.entries()) {
-    const m = place(onGround(x, z, -0.2), [0, rand() * Math.PI * 2, 0], 0.8 + rand() * 0.4)
-    if (i === 0 || rand() < 0.55) pine(pieces, m, rand)
-    else leafyTree(pieces, m, rand)
+    // The camera's tree keeps its normal size, so the strap fits its trunk.
+    if (i === 0) {
+      model(pieces, models[CAMERA_TREE_MODEL], place(onGround(x, z, -0.2), [0, rand() * Math.PI * 2, 0]))
+      continue
+    }
+    const m = place(onGround(x, z, -0.2), [0, rand() * Math.PI * 2, 0], 1 + rand() * 0.3)
+    model(pieces, one(rand() < 0.55 ? PINES : LEAFY), m)
   }
 
   // The trail camera on the first tree's trunk, 1 m up, turned towards the stag.
   {
     const [tx, tz] = CAMERA_TREE
     const turn = Math.atan2(-(CAMERA_LOOKS_AT[1] - tz), CAMERA_LOOKS_AT[0] - tx)
-    const radius = 0.33
+    const radius = trunkRadius(models[CAMERA_TREE_MODEL], 1.2) // 1.2: the camera is 1 m above the sunk base
     const dir = new THREE.Vector3(Math.cos(turn), 0, -Math.sin(turn))
     trailCamera(pieces, place(onGround(tx, tz, 1).addScaledVector(dir, radius), [0, turn, 0]), radius)
   }
 
-  // Wild flowers scattered over the meadow.
-  const flowerColors = [COLORS.white, COLORS.white, COLORS.yellow, COLORS.purple, COLORS.red]
+  // Wild flowers scattered over the meadow: small clumps of one colour, with grass tufts.
   for (let n = 0, tries = 0; n < 70 && tries < 500; tries++) {
     const x = (rand() * 2 - 1) * MEADOW.x * 1.05
     const z = (rand() * 2 - 1) * MEADOW.z * 1.05
     if (!inMeadow(x, z, 1.05)) continue
-    flowers(pieces, flowerColors[Math.floor(rand() * flowerColors.length)], place(onGround(x, z), [0, rand() * 3, 0]), rand)
+    const flower = one(FLOWERS)
+    for (let k = 0; k < 3; k++) {
+      const fx = x + (rand() - 0.5) * 0.8
+      const fz = z + (rand() - 0.5) * 0.8
+      model(pieces, rand() < 0.75 ? flower : one(GRASS), place(onGround(fx, fz, -0.03), [0, rand() * Math.PI * 2, 0], 0.8 + rand() * 0.4))
+    }
     n++
   }
 
-  // The fallen log with two robins on top, and a hedgehog next to it.
+  // The fallen log with two robins on top, and a hedgehog next to it. The kit's log is
+  // short, so it's stretched along its length (x) to LOG_SIZE.
   {
     const [x, z, turn] = LOG
-    fallenLog(pieces, place(onGround(x, z, -0.05), [0, turn, 0]), 4.5)
+    const { size } = models.log_large
+    const thick = LOG_SIZE.height / size.y
+    model(pieces, models.log_large, place(onGround(x, z, -0.05), [0, turn, 0], [LOG_SIZE.length / size.x, thick, thick]))
     for (const [along, look] of [
       [0.6, 0.4],
       [-1.3, 2.6],
@@ -181,8 +208,12 @@ function buildMeadow(origin: Vec3) {
   fox(pieces, place(onGround(FOX[0], FOX[1]), [0, FOX[2], 0]))
   for (const [x, z, turn] of RABBITS) rabbit(pieces, place(onGround(x, z), [0, turn, 0]))
 
+  // Rocks: scaled so they're `size` * 1.4 m wide (the kit's stones have different shapes:
+  // some low and wide, some tall), a little sunk in.
   for (const [x, z, size] of ROCKS) {
-    rock(pieces, place(onGround(x, z, size * 0.2), [rand(), rand() * 3, rand()], [size * 1.2, size * 0.8, size]))
+    const stone = one(STONES)
+    const scale = (size * 1.4) / Math.max(stone.size.x, stone.size.z)
+    model(pieces, stone, place(onGround(x, z, -0.15 * size), [0, rand() * Math.PI * 2, 0], scale))
   }
 
   return pieces.build()
