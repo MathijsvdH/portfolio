@@ -4,19 +4,21 @@ Each project gets a place on the island. Update the status column as zones get b
 
 | Zone | Project | Idea | Status |
 |---|---|---|---|
-| Island base | (none) | Terrain, water, sky, camera controls | todo |
-| Coral reef | Coral reef project | Reef in the shallow water off the coast | todo |
-| Boat | Knot-tying project | Boat at a jetty, with rope and knots on deck | todo |
-| Wildlife | Animal classification | Animals spread over the island, maybe with labels when you hover | todo |
-| Robot corner | Robotics project | A robot in a corner that is visibly "learning" (trying, failing, improving) | todo |
-| (open) | Internship | Idea still open, to decide. Free spot: the central hilltop | todo |
+| Island base | (none) | Real-size terrain with a rocky mountain, water, sky, camera controls | in progress |
+| Coral reef | Coral reef project | Reef in the shallow lagoon of the south-east cove | todo |
+| Boat | Knot-tying project | Life-size boat (~8 m) at a jetty on the east beach, rope and knots on deck; maybe a fishing cabin | todo |
+| Wildlife | Animal classification | Life-size animals in the northern meadow/forest, maybe with labels when you hover | todo |
+| Robot corner | Robotics project | A robot at a workshop on the west headland that is visibly "learning" (trying, failing, improving) | todo |
+| (open) | Internship | Idea still open, to decide. No spot reserved yet | todo |
+
+Everything is life-size (1 unit = 1 metre). See the scale table in `docs/roadmap.md`.
 
 Status values: `todo`, `in progress`, `placeholder` (works, but simple shapes), `done`.
 
 ## Answered
-- **Where does each zone sit?** See the map in `docs/roadmap.md`: Wildlife north,
-  Boat at a jetty on the east beach, Coral reef in a shallow lagoon to the south-east,
-  Robot corner on a rocky plateau in the west, central hilltop left open.
+- **Where does each zone sit?** See the map in `docs/roadmap.md`: rocky mountain in
+  the middle, Wildlife north, Boat at a jetty on the east beach, Coral reef in the
+  south-east cove, Robot corner on the west headland.
 - **How does a visitor move?** Click a zone and the camera flies there; a "Back to
   island" button returns to the overview. (See `docs/decisions.md`.)
 

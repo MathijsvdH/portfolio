@@ -12,6 +12,11 @@ Format:
 
 ---
 
+## 2026-10-17: real-size world with heightmap terrain
+**Context:** The first island (stacked flat terraces, ~22 m across) was a tabletop model: a person-sized marker was as tall as the hill. The goal is a Wuhu Island feel with life-size things (boat, fishing cabin) and a mountain that towers above everything.
+**Options:** Keep the small diorama and scale objects down; taller stacked terraces (`ExtrudeGeometry`); a heightmap terrain at real scale.
+**Choice:** Real scale (1 unit = 1 m, island ~240 m, rocky mountain ~90 m) with a heightmap: a grid whose points are lifted by a height formula. Stacked terraces look like a cake at this height, a heightmap gives natural slopes, and `heightAt(x, z)` lets everything be placed exactly on the ground. Regular rocky mountain, no volcano crater.
+
 ## 2026-10-17: free CC0 low-poly model packs for the art
 **Context:** The island needs a cosy, Animal Crossing / Wuhu Island look (trees, rocks, boat, robot, animals).
 **Options:** Build everything from three.js primitives in code; free CC0 packs (Kenney.nl, Quaternius); model own assets in Blender.
