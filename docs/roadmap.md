@@ -112,7 +112,16 @@ Besides the projects, the site has the usual portfolio things:
   shore, and a dive raft with a "diver down" flag floats by the reef. The water is extra clear
   (and a bit bluer) over the same strip, so the colours show through (`uClearArc` in `Water.tsx`).
   Good for now; may get tweaks once the other zones exist.
-- [ ] 9. Wildlife
+- [x] 9. Wildlife. First version in `src/zones/Wildlife/Wildlife.tsx`: a meadow on the
+  northern plateau (~17 m up, above the sea cliffs), ringed by pines and leafy trees on the
+  west, south and east, open to the north so the camera looks in from over the sea. Life-size
+  animals from simple shapes (`animals.ts`): a stag with antlers, a grazing doe, a fox, three
+  rabbits, a hedgehog and two robins on a fallen log. Wild flowers, rocks, and a trail camera
+  strapped to a tree, aimed at the deer. Scattered with a fixed seed and merged into one mesh
+  per colour. Hover/click through `useZoneHover` on an invisible sheet draped over the meadow
+  and forest. The animals stand still for now (movement is step 15).
+  `useZoneHover` now also checks the line of sight with `heightAt`, so a zone can't be
+  hovered or clicked through the mountain (R3F doesn't let the island block the pointer).
 - [ ] 10. Robot corner
 - [ ] 11. Home on the south beach (opens About / Socials / CV / Skills, same as the menu)
 - [ ] Internship zone: extra step once the idea is decided.

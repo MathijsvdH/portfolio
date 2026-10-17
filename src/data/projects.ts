@@ -28,6 +28,7 @@ export const projects: Record<ProjectId, Project> = {
     id: 'animal-classification',
     title: 'Animal Classification',
     zone: 'Wildlife across the island',
+    // Note from Mathijs: classification used the iNaturalist API, and sharing works much like iNaturalist.
     summary: 'TODO: describe the animal classification project.',
   },
   robotics: {

@@ -7,7 +7,7 @@ import { ZONES, type Vec3 } from './layout'
 // TEMPORARY: a clickable post at every zone position from layout.ts, to test the
 // fly-to camera before the real zones exist. Each zone step adds its id to BUILT,
 // which removes its post; delete this file once all zones are built.
-const BUILT: ProjectId[] = ['knot-tying', 'coral-reef']
+const BUILT: ProjectId[] = ['knot-tying', 'coral-reef', 'animal-classification']
 
 export function ZoneMarkers({ onSelect }: { onSelect: (id: ProjectId) => void }) {
   return (Object.keys(ZONES) as ProjectId[]).map((id) => {

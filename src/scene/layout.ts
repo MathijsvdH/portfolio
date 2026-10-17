@@ -47,7 +47,7 @@ export const ZONES: Partial<Record<ProjectId, ZoneLayout>> = {
   // Meadow on the northern lowlands, above the sea cliffs.
   'animal-classification': {
     position: onGround(-12, -80),
-    camera: { position: [-45, 60, -150], target: [-12, 18, -80] },
+    camera: { position: [-8, 32, -118], target: [-8, 21, -72] },
   },
   // Flat ground on the west headland.
   robotics: {
