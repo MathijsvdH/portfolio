@@ -85,9 +85,16 @@ Besides the projects, the site has the usual portfolio things:
   mountain). "Back to island" button. Temporary marker posts (`src/scene/ZoneMarkers.tsx`)
   stand in for the zones until they're built. On narrow phone screens the camera steps back
   so the island fits.
-- [ ] 6. **Corner menu**: always-visible 2D menu with social icons, About me, Skills &
+- [x] 6. **Corner menu**: always-visible 2D menu with social icons, About me, Skills &
   tools, CV download, and a project list that flies to each zone. New
   `src/data/profile.ts` for the personal content (TODOs).
+  Built in `src/ui/CornerMenu.tsx` (top-left; name and social icons always visible, the
+  rest behind the ☰ button) with inline SVG icons in `src/ui/SocialIcon.tsx`. Socials
+  without a link are greyed out, the CV shows "coming soon" until `cvUrl` is set. On
+  screens under 700 px the menu hides while a project panel is open.
+  Animations (plain CSS in `src/index.css`): the menu grows downwards, ☰ morphs into ✕,
+  the project panel and back button fade/slide in and out, fold-outs open smoothly. Turned
+  off for visitors with "reduce motion" on.
 
 **C. Places** (one step each, `new-zone` skill, simple shapes first, life-size)
 - [ ] 7. Boat + jetty

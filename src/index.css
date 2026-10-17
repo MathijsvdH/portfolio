@@ -12,3 +12,154 @@ body,
   background: #9fd3ea;
   font-family: system-ui, sans-serif;
 }
+
+/* ---- UI animations ----
+   A CSS transition animates a property whenever it changes (e.g. when a class is added).
+   @starting-style gives the "before" look for elements that just appeared, so they animate in too. */
+
+:root {
+  /* Lets height animate to "auto" (used by the About me / Skills fold-outs). */
+  interpolate-size: allow-keywords;
+}
+
+/* Corner menu body: grows downwards. A grid row going from 0fr to 1fr animates from
+   zero height to the content's own height. */
+.menu-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.3s ease,
+    opacity 0.2s ease;
+}
+.menu-body.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.menu-body > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ☰ button: three bars that morph into an ✕. */
+.menu-toggle span {
+  position: absolute;
+  left: 9px;
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transition:
+    transform 0.3s ease,
+    opacity 0.2s ease;
+}
+.menu-toggle span:nth-child(1) {
+  top: 11px;
+}
+.menu-toggle span:nth-child(2) {
+  top: 17px;
+}
+.menu-toggle span:nth-child(3) {
+  top: 23px;
+}
+.menu-toggle.open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.menu-toggle.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.menu-toggle.open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Hover feedback on the menu's project buttons and round buttons. */
+.menu-project,
+.round-button {
+  transition: background 0.15s ease;
+}
+.menu-project:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.menu-project[aria-current='true'] {
+  background: rgba(0, 0, 0, 0.08);
+}
+.round-button:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* About me / Skills fold-outs open smoothly (browsers without support just snap open). */
+details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.3s ease,
+    content-visibility 0.3s allow-discrete;
+}
+details[open]::details-content {
+  block-size: auto;
+}
+
+/* Project panel and back button: fade and slide in, and out again when closed.
+   visibility keeps them clickable-proof once they're gone. */
+.project-panel,
+.back-button,
+.corner-menu {
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s ease,
+    visibility 0.3s;
+}
+.project-panel {
+  opacity: 0;
+  transform: translateY(-12px);
+  visibility: hidden;
+}
+.project-panel.open {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+.back-button {
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  visibility: hidden;
+}
+.back-button.open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+@starting-style {
+  .project-panel.open {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  .back-button.open {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+}
+
+/* Narrow screens: the corner menu and the project panel don't fit side by side,
+   so the menu steps aside while a project is open. */
+@media (max-width: 700px) {
+  .corner-menu.panel-open {
+    opacity: 0;
+    transform: translateY(-12px);
+    visibility: hidden;
+  }
+}
+
+/* Visitors who asked their system for less motion get no animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+  }
+  /* Separate rule: browsers that don't know ::details-content skip only this one. */
+  details::details-content {
+    transition-duration: 0s !important;
+  }
+}

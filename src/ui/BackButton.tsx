@@ -1,13 +1,15 @@
 // Shown while a zone is open: flies the camera back to the whole-island view.
-export function BackButton({ onClick }: { onClick: () => void }) {
+// Always mounted so it can slide in and out (animation in index.css).
+export function BackButton({ open, onClick }: { open: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
+      className={open ? 'back-button open' : 'back-button'}
+      inert={!open}
       style={{
         position: 'absolute',
         bottom: 24,
         left: '50%',
-        transform: 'translateX(-50%)',
         padding: '10px 20px',
         border: 'none',
         borderRadius: 999,

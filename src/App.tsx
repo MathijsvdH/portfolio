@@ -10,11 +10,20 @@ import { ZoneMarkers } from './scene/ZoneMarkers'
 import { OVERVIEW, ZONES } from './scene/layout'
 import { ProjectPanel } from './ui/ProjectPanel'
 import { BackButton } from './ui/BackButton'
+import { CornerMenu } from './ui/CornerMenu'
 import { projects, type ProjectId } from './data/projects'
 
 export default function App() {
   // Which project panel is open. Zones call setSelected(id) on click.
   const [selected, setSelected] = useState<ProjectId | null>(null)
+  // The project the panel shows. It keeps the last one after closing, so the panel
+  // can still show its text while it fades out.
+  const [panelProject, setPanelProject] = useState<ProjectId | null>(null)
+
+  function select(id: ProjectId | null) {
+    setSelected(id)
+    if (id) setPanelProject(id)
+  }
 
   // Where the camera should be: the open zone's viewpoint, or the whole island.
   const view = selected ? (ZONES[selected]?.camera ?? OVERVIEW) : OVERVIEW
@@ -35,17 +44,23 @@ export default function App() {
 
         {/* Zones go here, e.g. <CoralReef position={ZONES['coral-reef'].position} onSelect={setSelected} />.
             Until then, temporary posts mark the zone spots. */}
-        <ZoneMarkers onSelect={setSelected} />
+        <ZoneMarkers onSelect={select} />
 
         <CameraRig view={view} />
       </Canvas>
 
-      {selected && (
-        <>
-          <ProjectPanel project={projects[selected]} onClose={() => setSelected(null)} />
-          <BackButton onClick={() => setSelected(null)} />
-        </>
+      <CornerMenu selected={selected} onSelect={select} />
+
+      {/* key: switching to another project remounts the panel, so it animates in again. */}
+      {panelProject && (
+        <ProjectPanel
+          key={panelProject}
+          project={projects[panelProject]}
+          open={selected !== null}
+          onClose={() => select(null)}
+        />
       )}
+      <BackButton open={selected !== null} onClick={() => select(null)} />
     </>
   )
 }
