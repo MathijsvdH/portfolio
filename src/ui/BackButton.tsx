@@ -1,11 +1,11 @@
-// Shown while a zone is open: flies the camera back to the whole-island view.
-// Always mounted so it can slide in and out (animation in index.css).
-export function BackButton({ open, onClick }: { open: boolean; onClick: () => void }) {
+// The button at the bottom of the screen. Its text and where it goes depend on where the
+// camera is (App.tsx): "Explore the island" from the beach, "Back to island" from a zone,
+// "Back to the beach" from the overview. Slides in on page load (animation in index.css).
+export function BackButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className={open ? 'back-button open' : 'back-button'}
-      inert={!open}
+      className="back-button open"
       style={{
         position: 'absolute',
         bottom: 24,
@@ -20,7 +20,7 @@ export function BackButton({ open, onClick }: { open: boolean; onClick: () => vo
         cursor: 'pointer',
       }}
     >
-      ← Back to island
+      {label}
     </button>
   )
 }

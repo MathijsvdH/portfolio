@@ -1,12 +1,12 @@
 import { useState, type CSSProperties } from 'react'
 import { profile } from '../data/profile'
 import { projects, type ProjectId } from '../data/projects'
-import { ZONES } from '../scene/layout'
+import { ZONES, isProject, type Place } from '../scene/layout'
 import { SocialIcon } from './SocialIcon'
 
 type Props = {
-  selected: ProjectId | null
-  onSelect: (id: ProjectId) => void
+  selected: Place | null
+  onSelect: (id: Place) => void
 }
 
 // Always-visible menu in the top-left corner: name, social icons, and (when opened)
@@ -18,7 +18,7 @@ export function CornerMenu({ selected, onSelect }: Props) {
   const zoneIds = Object.keys(ZONES) as ProjectId[]
 
   return (
-    <nav className={selected ? 'corner-menu panel-open' : 'corner-menu'} style={card} aria-label="Menu">
+    <nav className={isProject(selected) ? 'corner-menu panel-open' : 'corner-menu'} style={card} aria-label="Menu">
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, fontSize: 18 }}>{profile.name}</div>
@@ -57,6 +57,20 @@ export function CornerMenu({ selected, onSelect }: Props) {
           skipped by the keyboard while closed. */}
       <div className={open ? 'menu-body open' : 'menu-body'} inert={!open}>
         <div>
+          {/* Home: back to the start view on the beach. */}
+          <button
+            onClick={() => {
+              onSelect('home')
+              setOpen(false)
+            }}
+            aria-current={selected === 'home'}
+            className="menu-project"
+            style={{ ...projectButton, marginTop: 10 }}
+          >
+            <div style={{ fontWeight: 600 }}>⌂ Home</div>
+            <div style={{ fontSize: 12, opacity: 0.6 }}>The welcome beach</div>
+          </button>
+
           <div style={{ ...heading, marginTop: 14 }}>Projects</div>
           {zoneIds.map((id) => (
             <button

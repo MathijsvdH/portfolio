@@ -27,6 +27,11 @@ Format:
 **Options:** Keep drei `Sky` and guess a fog colour; a simple gradient sky dome with the fog colour at the horizon; no tone mapping at all.
 **Choice:** A gradient sky dome (vertex colours, no shader) whose horizon colour is the fog colour, plus three.js Neutral tone mapping, which keeps the palette's colours bright instead of greying them like ACES. All colours live in `src/scene/palette.ts`.
 
+## 2026-10-18: the site starts on the Home beach, and the info lives in the objects
+**Context:** The first Home (a small hut on the south beach that opened an About panel) was easy to miss from the overview, and clicking it felt like the corner menu again. Home was meant to be the start.
+**Options:** A bigger landmark (lighthouse); start the camera on the beach; make the props themselves the content; a map board as a hub; go inside the hut.
+**Choice:** Start on the beach, with the props as the content (sign, notice board, mailbox postcards, painted from `profile.ts`) and an island map board whose pins fly to the zones. "Explore the island" lifts the camera to the overview. The corner menu stays as the quick way in. Going inside the hut could come later.
+
 ## 2026-10-17: personal info in a corner menu and a Home place
 **Context:** Besides projects, the site needs the usual portfolio things (about me, socials, contact, CV, skills). Visitors such as recruiters often want these fast, without exploring.
 **Options:** Only a place on the island; only a 2D menu; both.

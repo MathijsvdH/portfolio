@@ -152,6 +152,39 @@ details[open]::details-content {
 }
 
 /* Visitors who asked their system for less motion get no animations. */
+/* Name tags over the clickable things at Home (src/zones/Home/Hotspot.tsx). */
+.home-label {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  /* Placed by ScreenAnchors (it sets `transform`), so they start at the top left. */
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s,
+    background 0.15s ease;
+}
+.home-label.show {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.4s; /* fade in once the camera has (nearly) landed */
+}
+.home-label:hover {
+  background: #ffffff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -6,6 +6,28 @@ import { heightAt } from './islandShape'
 
 export type Vec3 = [number, number, number]
 
+// The spots at Home that the camera can fly up to: the welcome sign (about me), the notice
+// board (skills and CV), the mailbox (contact) and the island map.
+export const HOME_SPOTS = ['about', 'skills', 'contact', 'map'] as const
+export type HomeSpot = (typeof HOME_SPOTS)[number]
+
+// Somewhere the camera can be: a project zone, Home (the start view on the beach), or one
+// of Home's spots. `null` is the overview of the whole island.
+export type Place = ProjectId | 'home' | HomeSpot
+
+export function isHomeSpot(place: Place | null): place is HomeSpot {
+  return HOME_SPOTS.includes(place as HomeSpot)
+}
+
+// Is the camera at Home: the start view or one of its spots?
+export function atHome(place: Place | null) {
+  return place === 'home' || isHomeSpot(place)
+}
+
+export function isProject(place: Place | null): place is ProjectId {
+  return place !== null && !atHome(place)
+}
+
 // A spot on the ground: looks up the height so things never float or sink.
 function onGround(x: number, z: number): Vec3 {
   return [x, heightAt(x, z), z]
@@ -54,4 +76,12 @@ export const ZONES: Partial<Record<ProjectId, ZoneLayout>> = {
     position: onGround(-97, 9),
     camera: { position: [-105, 16.2, 14.5], target: [-97.2, 13.4, 8.6] },
   },
+}
+
+// Home: the welcome hut on the south arrival beach. The site starts here, on the beach.
+// Not a project, so it's not in ZONES. Its spots' viewpoints are in src/zones/Home/spots.ts,
+// because they follow the props' places on the beach.
+export const HOME: ZoneLayout = {
+  position: onGround(-24, 89),
+  camera: { position: [-14.5, 9.2, 110.5], target: [-26.6, 3, 92] },
 }

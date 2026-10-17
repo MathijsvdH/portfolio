@@ -132,7 +132,27 @@ Besides the projects, the site has the usual portfolio things:
   posed with inverse kinematics (`armPose.ts`), so step 15 can move it every frame.
   Hitboxes: a slab over the pad and a box around the shed, kept low because the zone camera
   stands low.
-- [ ] 11. Home on the south beach (opens About / Socials / CV / Skills, same as the menu)
+- [x] 11. Home on the south beach, where the site starts. `src/zones/Home/`: a mint beach
+  hut on stilts (coral roof, porch, steps, boardwalk to the sea) with deck chairs, a parasol,
+  a fire pit, a surfboard and palms. First try (a small hut that opened an About panel) felt
+  like a copy of the corner menu and was easy to miss, so it was reworked:
+  - **Start on the beach**: the page opens low on the Home beach (`HOME.camera` in
+    `layout.ts`), not on the overview. The bottom button changes with where you are:
+    "Explore the island ↑" (beach → overview), "← Back to island" (zone → overview),
+    "⌂ Back to the beach" (overview → beach). The corner menu has a Home entry too.
+  - **The objects are the content**, painted with canvas textures from `profile.ts`
+    (`textures.ts`, no image or font files): the welcome sign (name, tagline, About me), the
+    notice board on the hut (skills as notes, a CV sheet to click and download), the mailbox
+    with a "Find me" board of postcards (one per social link, click to open). Clicking an
+    object flies the camera up to it (`spots.ts`: the spots `about`, `skills`, `contact`, `map`).
+  - **Island map**: a board painted from the real terrain (`heightAt`), north up, with a 3D
+    pin and name tag per zone and "You are here". Click a pin to fly to that zone.
+  - Name tags over the four objects at the start view: HTML buttons (`src/ui/HomeLabels.tsx`)
+    kept over their 3D spots by `src/scene/ScreenAnchors.tsx`. (drei `Html` threw a
+    `removeChild` error on unmount with React 19, so it isn't used.)
+  - From far away the whole beach is one hitbox that flies back to the start view.
+    `useZoneHover` got an `enabled` flag for this. Short camera hops (between spots) stay
+    low, and the zoom limit follows the view, so scrolling at a close-up doesn't jump out.
 - [ ] Internship zone: extra step once the idea is decided.
 
 **D. Make it pretty**
@@ -142,7 +162,7 @@ Besides the projects, the site has the usual portfolio things:
   `heightAt`; zones kept clear.
 - [ ] 14. **Zone upgrades**: placeholder shapes → models, one zone per step.
 - [ ] 15. **Life**: sway, bobbing, birds, fish, the robot trying and failing (`useFrame`).
-- [ ] 16. **Labels**: hover name tags with drei `Html`, small signposts.
+- [ ] 16. **Labels**: hover name tags (with `ScreenAnchors`, like Home's tags), small signposts.
 
 **E. Polish & ship**
 - [ ] 17. Loading screen (drei `useProgress`).

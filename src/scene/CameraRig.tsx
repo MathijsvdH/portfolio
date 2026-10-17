@@ -28,12 +28,14 @@ function ease(t: number) {
 
 // A straight line between two views can go through the mountain. Find how far the
 // middle of the flight has to be lifted (in an arc, sin) to stay CLEARANCE above the ground.
+// Short hops (between the spots at Home) need less room, so they stay low.
 function liftNeeded(from: THREE.Vector3, to: THREE.Vector3) {
+  const clearance = Math.min(CLEARANCE, from.distanceTo(to) / 5)
   const p = new THREE.Vector3()
   let lift = 0
   for (let t = 0.02; t < 0.98; t += 0.02) {
     p.lerpVectors(from, to, t)
-    const short = heightAt(p.x, p.z) + CLEARANCE - p.y
+    const short = heightAt(p.x, p.z) + clearance - p.y
     if (short > 0) lift = Math.max(lift, short / Math.sin(Math.PI * t))
   }
   return Math.min(lift, 120)
@@ -48,6 +50,11 @@ export function CameraRig({ view }: { view: Viewpoint }) {
   // fits from side to side, so step back from the target, up to 1.8x as far.
   const aspect = useThree((state) => state.size.width / state.size.height)
   const backOff = THREE.MathUtils.clamp(1.6 / aspect, 1, 1.8)
+
+  // How close visitors can zoom in. Close-up views (the spots at Home are a few metres from
+  // what they look at) need a smaller limit, or the first scroll would push the camera out.
+  const viewDistance = new THREE.Vector3(...view.position).distanceTo(new THREE.Vector3(...view.target)) * backOff
+  const minDistance = Math.min(30, viewDistance * 0.5)
 
   // Runs when `view` changes: plan a flight from wherever the camera is now.
   useEffect(() => {
@@ -97,7 +104,7 @@ export function CameraRig({ view }: { view: Viewpoint }) {
     <CameraControls
       ref={controls}
       makeDefault
-      minDistance={30}
+      minDistance={minDistance}
       maxDistance={550}
       maxPolarAngle={Math.PI / 2.2} // stop the camera going below the water
       // Left drag rotates, wheel/pinch zooms. No panning, so visitors can't drift off the island.

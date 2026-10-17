@@ -6,6 +6,7 @@ import { heightAt } from './islandShape'
 
 // Hover and click for a zone's invisible hitboxes. Spread `handlers` on every hitbox mesh:
 // <mesh {...handlers} visible={false}>.
+// `enabled` false: nothing is hovered, and `handlers` is empty, so the pointer ignores the hitboxes.
 //
 // Why on each hitbox and not on the zone's group: R3F keeps one hover record per object
 // that has the handlers. With them on the group, moving the pointer straight from one
@@ -13,9 +14,17 @@ import { heightAt } from './islandShape'
 // hitboxes, every move between them gives a clean out + over pair, and we keep track of
 // which hitboxes the pointer is on. Bonus: only the hitboxes are tested against the
 // pointer, not every small part of the zone, which is faster.
-export function useZoneHover(onClick: () => void) {
+export function useZoneHover(onClick: () => void, enabled = true) {
   const [under, setUnder] = useState<ReadonlySet<string>>(new Set()) // hitboxes under the pointer
-  const hovered = under.size > 0
+  // When turned off or on, forget what was under the pointer: the hitboxes stop getting
+  // "out" events while off, so the old list can't be trusted. (Resetting state while
+  // rendering, when a prop changes, is the pattern from the React docs.)
+  const [wasEnabled, setWasEnabled] = useState(enabled)
+  if (wasEnabled !== enabled) {
+    setWasEnabled(enabled)
+    setUnder(new Set())
+  }
+  const hovered = enabled && under.size > 0
   useCursor(hovered) // pointer cursor while hovering
 
   function setOver(id: string, over: boolean) {
@@ -51,7 +60,7 @@ export function useZoneHover(onClick: () => void) {
     },
   }
 
-  return { hovered, handlers }
+  return { hovered, handlers: enabled ? handlers : {} }
 }
 
 const STEP = 2 // metres between checks along the line of sight

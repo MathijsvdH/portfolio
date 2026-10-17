@@ -10,7 +10,7 @@ Each project gets a place on the island. Update the status column as zones get b
 | Wildlife | Animal classification | Life-size animals in the northern meadow/forest, maybe with labels when you hover | placeholder |
 | Robot corner | Robotics project | Workshop on the west headland: two pick-and-place robot arms side by side, comparing ACT and flow matching on the same task | placeholder |
 | (open) | Internship | Idea still open, to decide. No spot reserved yet | todo |
-| Home | (personal info, not a project) | Welcome hut or lighthouse on the south arrival beach. Opens About me, Socials & contact, CV, Skills & tools. Same content as the corner menu | todo |
+| Home | (personal info, not a project) | Where the site starts: a welcome hut on the south beach. The things around it are the content: welcome sign (About me), notice board (skills, CV), mailbox with postcards (socials), and an island map with a pin per zone | placeholder |
 
 Everything is life-size (1 unit = 1 metre). See the scale table in `docs/roadmap.md`.
 
@@ -23,9 +23,9 @@ Status values: `todo`, `in progress`, `placeholder` (works, but simple shapes), 
 - **How does a visitor move?** Click a zone and the camera flies there; a "Back to
   island" button returns to the overview. (See `docs/decisions.md`.) Built in step 5; until a
   zone exists, a temporary marker post stands at its spot.
+- **Home: welcome hut or lighthouse?** A welcome hut (step 11).
 
 ## Open questions
 - What is the internship zone's idea? (The mirror is dropped for now.)
-- Home: welcome hut or lighthouse?
 - Which socials exist (GitHub, LinkedIn, Instagram, ...)? And the CV PDF.
 - What does the project panel show: text, images, video, links?
