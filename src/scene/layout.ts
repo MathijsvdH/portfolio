@@ -52,6 +52,6 @@ export const ZONES: Partial<Record<ProjectId, ZoneLayout>> = {
   // Flat ground on the west headland.
   robotics: {
     position: onGround(-97, 9),
-    camera: { position: [-160, 45, 45], target: [-97, 12, 9] },
+    camera: { position: [-105, 16.2, 14.5], target: [-97.2, 13.4, 8.6] },
   },
 }

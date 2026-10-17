@@ -14,6 +14,7 @@ import { CornerMenu } from './ui/CornerMenu'
 import { Boat } from './zones/Boat/Boat'
 import { CoralReef } from './zones/CoralReef/CoralReef'
 import { Wildlife } from './zones/Wildlife/Wildlife'
+import { RobotCorner } from './zones/RobotCorner/RobotCorner'
 import { projects, type ProjectId } from './data/projects'
 
 export default function App() {
@@ -51,6 +52,7 @@ export default function App() {
         <Boat position={ZONES['knot-tying']!.position} onSelect={select} />
         <CoralReef position={ZONES['coral-reef']!.position} onSelect={select} />
         <Wildlife position={ZONES['animal-classification']!.position} onSelect={select} />
+        <RobotCorner position={ZONES.robotics!.position} onSelect={select} />
 
         <CameraRig view={view} />
       </Canvas>

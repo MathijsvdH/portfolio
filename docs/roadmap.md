@@ -122,7 +122,16 @@ Besides the projects, the site has the usual portfolio things:
   and forest. The animals stand still for now (movement is step 15).
   `useZoneHover` now also checks the line of sight with `heightAt`, so a zone can't be
   hovered or clicked through the mountain (R3F doesn't let the island block the pointer).
-- [ ] 10. Robot corner
+- [x] 10. Robot corner. First version in `src/zones/RobotCorner/RobotCorner.tsx`: a small
+  workshop on a concrete pad on the west headland plateau. An open wooden shed (workbench
+  with laptop, toolbox and a pegboard of tools, a shelf of bins) and in front of it two test
+  stations side by side, each with its own colour (blue and orange tape): a table with a robot
+  arm, blocks to pick up and a tray to place them in, for comparing ACT and flow matching on
+  the same task. Both stations show the same state (one block placed, one dropped), so the
+  scene doesn't claim a result. The arm (`RobotArm.tsx`) is a chain of nested joint groups,
+  posed with inverse kinematics (`armPose.ts`), so step 15 can move it every frame.
+  Hitboxes: a slab over the pad and a box around the shed, kept low because the zone camera
+  stands low.
 - [ ] 11. Home on the south beach (opens About / Socials / CV / Skills, same as the menu)
 - [ ] Internship zone: extra step once the idea is decided.
 

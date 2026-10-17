@@ -35,6 +35,7 @@ export const projects: Record<ProjectId, Project> = {
     id: 'robotics',
     title: 'Robotics',
     zone: 'Learning robot in a corner',
+    // Note from Mathijs: a pick-and-place robot arm, comparing ACT and flow matching on the same task.
     summary: 'TODO: describe the robotics project.',
   },
   internship: {
