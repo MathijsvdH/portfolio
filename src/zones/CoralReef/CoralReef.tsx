@@ -1,15 +1,16 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import type { ProjectId } from '../../data/projects'
-import { heightAt } from '../../scene/islandShape'
 import { REEF_AREA, type Vec3 } from '../../scene/layout'
 import { useZoneHover } from '../../scene/useZoneHover'
+import { Fish } from './Fish'
 import { Paint } from './Paint'
 import { Raft } from './Raft'
 import {
   COLORS,
   Pieces,
   brainCoral,
+  distanceToDepth,
   branchingCoral,
   fanLattice,
   groundY,
@@ -91,6 +92,7 @@ export function CoralReef({ position, onSelect }: Props) {
       ))}
 
       <Raft origin={position} position={RAFT_POS} glow={glow} />
+      <Fish origin={position} />
 
       {/* The hitboxes catch hover and clicks for the whole zone, also between the corals.
           visible={false}: not drawn, but the pointer still hits it (raycasting ignores
@@ -103,15 +105,6 @@ export function CoralReef({ position, onSelect }: Props) {
       </mesh>
     </group>
   )
-}
-
-// How far from the island's centre, in direction `a` (radians), the water first gets
-// deeper than `depth` metres.
-function distanceToDepth(a: number, depth: number) {
-  for (let r = REEF_AREA.inner - 10; r < REEF_AREA.outer + 20; r += 0.5) {
-    if (heightAt(Math.cos(a) * r, Math.sin(a) * r) < -depth) return r
-  }
-  return REEF_AREA.outer + 20
 }
 
 // The hitbox: a flat strip along the coast, from just off the beach to a few metres past

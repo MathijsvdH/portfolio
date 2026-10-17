@@ -1,3 +1,6 @@
+import { useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import type * as THREE from 'three'
 import type { Vec3 } from '../../scene/layout'
 import { BASE_HEIGHT, FORE, HAND, UPPER, type ArmPose } from './armPose'
 import { Paint } from './Paint'
@@ -8,7 +11,8 @@ import { BLOCK, COLORS } from './parts'
 //
 // Each joint is a <group> inside the one before it, so turning a joint moves everything
 // after it, like a real arm (a "scene graph" hierarchy). That's why the arm isn't merged
-// like the rest of the workshop: later (step 15) the joints can be turned every frame.
+// like the rest of the workshop: every frame, useFrame asks `poseAt` for the pose at that
+// moment and turns the joints to match, without re-rendering anything.
 //
 // Arm coordinates: the base stands at y = 0, every link points up (+y) when its angle is 0.
 // Sizes and the pose maths are in armPose.ts.
@@ -16,18 +20,31 @@ import { BLOCK, COLORS } from './parts'
 type Props = {
   position: Vec3
   rotation?: number // turns the whole arm around y
-  pose: ArmPose
+  poseAt: (time: number) => ArmPose // the pose at a moment (seconds since the page opened)
   accent: string // colour of the joint caps, one per test station
-  holding?: string // colour of the block between the fingers, if any
   glow: number
 }
 
-export function RobotArm({ position, rotation = 0, pose, accent, holding, glow }: Props) {
-  // In this model a positive angle tilts the link towards +x, which is rotation -angle
-  // around z.
-  const tilt = (a: number): [number, number, number] => [0, 0, -a]
+export function RobotArm({ position, rotation = 0, poseAt, accent, glow }: Props) {
   const paint = (color: string) => <Paint color={color} emissive={color} glow={glow} />
-  const finger = Math.max(pose.open, BLOCK) / 2 + 0.008
+  const base = useRef<THREE.Group>(null)
+  const shoulder = useRef<THREE.Group>(null)
+  const elbow = useRef<THREE.Group>(null)
+  const wrist = useRef<THREE.Group>(null)
+  const fingers = useRef<(THREE.Mesh | null)[]>([])
+
+  useFrame(({ clock }) => {
+    if (!base.current || !shoulder.current || !elbow.current || !wrist.current) return
+    const pose = poseAt(clock.elapsedTime)
+    // In this model a positive angle tilts the link towards +x, which is rotation -angle
+    // around z.
+    base.current.rotation.y = pose.turn
+    shoulder.current.rotation.z = -pose.shoulder
+    elbow.current.rotation.z = -pose.elbow
+    wrist.current.rotation.z = -pose.wrist
+    const finger = Math.max(pose.open, BLOCK) / 2 + 0.008
+    fingers.current.forEach((mesh, i) => mesh?.position.setZ((i ? 1 : -1) * finger))
+  })
 
   return (
     <group position={position} rotation={[0, rotation, 0]}>
@@ -38,14 +55,14 @@ export function RobotArm({ position, rotation = 0, pose, accent, holding, glow }
       </mesh>
 
       {/* Base: turns around y. */}
-      <group rotation={[0, pose.turn, 0]}>
+      <group ref={base}>
         <mesh position={[0, 0.1, 0]} castShadow>
           <cylinderGeometry args={[0.08, 0.09, 0.1, 16]} />
           {paint(COLORS.white)}
         </mesh>
 
         {/* Shoulder */}
-        <group position={[0, BASE_HEIGHT, 0]} rotation={tilt(pose.shoulder)}>
+        <group ref={shoulder} position={[0, BASE_HEIGHT, 0]}>
           <Joint radius={0.06} accent={accent} glow={glow} />
           <mesh position={[0, UPPER / 2, 0]} castShadow>
             <boxGeometry args={[0.07, UPPER, 0.07]} />
@@ -53,7 +70,7 @@ export function RobotArm({ position, rotation = 0, pose, accent, holding, glow }
           </mesh>
 
           {/* Elbow */}
-          <group position={[0, UPPER, 0]} rotation={tilt(pose.elbow)}>
+          <group ref={elbow} position={[0, UPPER, 0]}>
             <Joint radius={0.05} accent={accent} glow={glow} />
             <mesh position={[0, FORE / 2, 0]} castShadow>
               <boxGeometry args={[0.055, FORE, 0.055]} />
@@ -61,24 +78,18 @@ export function RobotArm({ position, rotation = 0, pose, accent, holding, glow }
             </mesh>
 
             {/* Wrist and gripper */}
-            <group position={[0, FORE, 0]} rotation={tilt(pose.wrist)}>
+            <group ref={wrist} position={[0, FORE, 0]}>
               <Joint radius={0.035} accent={accent} glow={glow} />
               <mesh position={[0, 0.045, 0]} castShadow>
                 <boxGeometry args={[0.05, 0.06, 0.1]} />
                 {paint(COLORS.tool)}
               </mesh>
-              {[-1, 1].map((s) => (
-                <mesh key={s} position={[0, HAND - 0.025, s * finger]} castShadow>
+              {[0, 1].map((i) => (
+                <mesh key={i} ref={(mesh) => void (fingers.current[i] = mesh)} position={[0, HAND - 0.025, 0]} castShadow>
                   <boxGeometry args={[0.025, 0.07, 0.012]} />
                   {paint(COLORS.metal)}
                 </mesh>
               ))}
-              {holding && (
-                <mesh position={[0, HAND - 0.02, 0]} castShadow>
-                  <boxGeometry args={[BLOCK, BLOCK, BLOCK]} />
-                  {paint(holding)}
-                </mesh>
-              )}
             </group>
           </group>
         </group>

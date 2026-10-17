@@ -4,10 +4,12 @@ import type { ProjectId } from '../../data/projects'
 import type { Vec3 } from '../../scene/layout'
 import type { ModelName } from '../../scene/modelList'
 import { useModels, type Model } from '../../scene/models'
+import { MODEL_COLORS } from '../../scene/palette'
 import { useZoneHover } from '../../scene/useZoneHover'
-import { deer, fox, hedgehog, rabbit, robin } from './animals'
+import { MeadowAnimals } from './MeadowAnimals'
 import { Paint } from './Paint'
 import { Pieces, groundY, model, place, random, trailCamera, trunkRadius } from './parts'
+import { LOG, LOG_SIZE, STAG } from './spots'
 
 // Wildlife zone: a meadow on the northern lowlands, ringed by forest on three sides and
 // open to the sea cliffs in the north. Deer, a fox, rabbits, a hedgehog and robins on a
@@ -23,18 +25,6 @@ const SEED = 9 // change it for a different (but always the same) random meadow
 const MEADOW = { x: 24, z: 11 }
 const TREE_COUNT = 60
 
-// Animals: [x, z, turn]. Turn is in radians: 0 faces east, PI / 2 faces north.
-const STAG: Vec3 = [-4, -3, 0.5]
-const DOE: Vec3 = [-0.5, 0.5, 2.7]
-const FOX: Vec3 = [9, -4, 2.3]
-const RABBITS: Vec3[] = [
-  [-12, -6, 1.2],
-  [-10.8, -5.4, 2.6],
-  [4, -8, -0.4],
-]
-const LOG: Vec3 = [-15, 2, 0.35] // a fallen tree, 4.5 m long
-const LOG_SIZE = { length: 4.5, height: 0.72 } // the robins sit on top
-const HEDGEHOG: Vec3 = [-12.6, 3.6, -0.6]
 const ROCKS: [number, number, number][] = [
   [17, -9, 1.2],
   [18.8, -7.6, 0.7],
@@ -54,6 +44,8 @@ const LEAFY: ModelName[] = ['tree_default', 'tree_oak', 'tree_fat', 'tree_detail
 const STONES: ModelName[] = ['stone_largeA', 'stone_largeB', 'stone_tallA']
 const FLOWERS: ModelName[] = ['flower_redA', 'flower_yellowA', 'flower_purpleA']
 const GRASS: ModelName[] = ['grass', 'grass_large']
+// The colours of the trees' leaves: those meshes sway in the wind.
+const LEAVES = [MODEL_COLORS.leafsGreen, MODEL_COLORS.leafsDark]
 
 // Invisible hitbox: a sheet draped over the meadow and the forest around it, this far
 // above the ground. Covers x and z from..to, one point every HIT_STEP metres.
@@ -82,9 +74,10 @@ export function Wildlife({ position, onSelect }: Props) {
     <group position={position}>
       {meshes.map(({ color, geometry }) => (
         <mesh key={color} geometry={geometry} castShadow receiveShadow>
-          <Paint color={color} emissive={color} glow={glow} />
+          <Paint color={color} emissive={color} glow={glow} sway={LEAVES.includes(color)} />
         </mesh>
       ))}
+      <MeadowAnimals origin={position} glow={glow} />
 
       {/* The hitbox catches hover and clicks for the whole zone, also the open grass.
           visible={false}: not drawn, but the pointer still hits it. DoubleSide so it's hit
@@ -184,29 +177,14 @@ function buildMeadow(origin: Vec3, models: Record<ModelName, Model>) {
     n++
   }
 
-  // The fallen log with two robins on top, and a hedgehog next to it. The kit's log is
-  // short, so it's stretched along its length (x) to LOG_SIZE.
+  // The fallen log (the robins on it are in MeadowAnimals.tsx). The kit's log is short, so it's
+  // stretched along its length (x) to LOG_SIZE.
   {
     const [x, z, turn] = LOG
     const { size } = models.log_large
     const thick = LOG_SIZE.height / size.y
     model(pieces, models.log_large, place(onGround(x, z, -0.05), [0, turn, 0], [LOG_SIZE.length / size.x, thick, thick]))
-    for (const [along, look] of [
-      [0.6, 0.4],
-      [-1.3, 2.6],
-    ]) {
-      const bx = x + Math.cos(turn) * along
-      const bz = z - Math.sin(turn) * along
-      robin(pieces, place(onGround(x, z, 0.69).setX(bx).setZ(bz), [0, turn + look, 0]))
-    }
   }
-  hedgehog(pieces, place(onGround(HEDGEHOG[0], HEDGEHOG[1]), [0, HEDGEHOG[2], 0]))
-
-  // The animals.
-  deer(pieces, place(onGround(STAG[0], STAG[1]), [0, STAG[2], 0]), { antlers: true, grazing: false })
-  deer(pieces, place(onGround(DOE[0], DOE[1]), [0, DOE[2], 0], 0.88), { antlers: false, grazing: true })
-  fox(pieces, place(onGround(FOX[0], FOX[1]), [0, FOX[2], 0]))
-  for (const [x, z, turn] of RABBITS) rabbit(pieces, place(onGround(x, z), [0, turn, 0]))
 
   // Rocks: scaled so they're `size` * 1.4 m wide (the kit's stones have different shapes:
   // some low and wide, some tall), a little sunk in.

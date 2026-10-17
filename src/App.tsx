@@ -5,6 +5,8 @@ import { Island } from './scene/Island'
 import { Water } from './scene/Water'
 import { Lighting } from './scene/Lighting'
 import { SkyAndFog } from './scene/SkyAndFog'
+import { Birds } from './scene/Birds'
+import { Wind } from './scene/Wind'
 import { CameraRig } from './scene/CameraRig'
 import { ScreenAnchors } from './scene/ScreenAnchors'
 import { ZoneMarkers } from './scene/ZoneMarkers'
@@ -74,6 +76,8 @@ export default function App() {
         <Lighting />
         <Island />
         <Water />
+        <Wind />
+        <Birds />
 
         {/* Zones go here, e.g. <CoralReef position={ZONES['coral-reef'].position} onSelect={setSelected} />.
             Until then, temporary posts mark the zone spots. */}

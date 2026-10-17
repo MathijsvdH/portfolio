@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useCursor } from '@react-three/drei'
 import type { ThreeEvent } from '@react-three/fiber'
 import type { ProjectId } from '../../data/projects'
+import { Bobbing } from '../../scene/Bobbing'
 import type { Vec3 } from '../../scene/layout'
 import { FishingGear } from './FishingGear'
 import { Jetty } from './Jetty'
@@ -69,7 +70,11 @@ export function Boat({ position, onSelect }: Props) {
       onPointerOut={() => setHovered(false)}
     >
       <Jetty origin={position} glow={glow} />
-      <Sailboat position={BOAT_POS} glow={glow} />
+      {/* The boat floats: it rises, sinks and rocks a little. Kept small, because the
+          mooring lines are fixed at both ends. */}
+      <Bobbing position={BOAT_POS} height={0.04} roll={0.02} pitch={0.006} period={5}>
+        <Sailboat position={[0, 0, 0]} glow={glow} />
+      </Bobbing>
       <FishingGear origin={position} glow={glow} />
 
       {mooringLines.map((g, i) => (

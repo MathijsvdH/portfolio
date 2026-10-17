@@ -180,7 +180,27 @@ Besides the projects, the site has the usual portfolio things:
     `trunkRadius()` measures the camera tree's trunk so the trail camera's strap fits.
     Animals and the trail camera stay hand-built (the kit has none). Wrapped in
     `<Suspense>` in `App.tsx`, because it waits for the model file.
-- [ ] 15. **Life**: sway, bobbing, birds, fish, the robot trying and failing (`useFrame`).
+- [x] 15. **Life**: things move, all with `useFrame` (runs every frame) changing objects
+  directly, so nothing re-renders.
+  - Robot arms (`RobotCorner/armTask.ts`): both loop pick → carry → place in the tray, then
+    the old block shrinks away and a new one grows in. About 3 in 10 tries the block slips
+    and drops on the table; same odds for both arms, out of step, so neither looks better.
+    The task is a pure function of time, so the arm (`RobotArm.tsx`, joints turned by refs)
+    and its block (`TaskBlock`) always agree. Poses come from the existing `reach()`.
+  - Floating: `src/scene/Bobbing.tsx` makes the sailboat and the dive raft rise, sink and
+    rock a little (small for the boat: its mooring lines are fixed).
+  - Wind: `src/scene/sway.ts` adds a few shader lines (`onBeforeCompile`) that push leaf
+    corners back and forth; `Wind.tsx` runs its clock. Used for the Wildlife trees' leaves
+    and Home's palm leaves (`Paint` got a `sway` option). Shadows don't sway.
+  - Birds (`src/scene/Birds.tsx`): seagulls circling in three small flocks (over Home, low
+    enough for the start view; over the boat; high over the south coast), leaning into the
+    turn, flapping then gliding.
+  - Fish (`CoralReef/Fish.tsx`): six schools swimming loops over the reef, one
+    `InstancedMesh` with a colour per fish. Slightly bigger than real, to be seen from above.
+  - Animals (`Wildlife/MeadowAnimals.tsx`): out of the meadow's merged mesh, each its own
+    group. The doe grazes and looks up (neck and head are separate joints), the stag looks
+    around, the fox swishes its tail, rabbits hop in small circles, robins hop and turn on
+    the log, the hedgehog shuffles about. Their places moved to `Wildlife/spots.ts`.
 - [ ] 16. **Labels**: hover name tags (with `ScreenAnchors`, like Home's tags), small signposts.
 
 **E. Polish & ship**

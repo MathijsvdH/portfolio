@@ -1,11 +1,14 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import type * as THREE from 'three'
 import type { ProjectId } from '../../data/projects'
 import type { Vec3 } from '../../scene/layout'
 import { useZoneHover } from '../../scene/useZoneHover'
 import { Paint } from './Paint'
-import { reach } from './armPose'
+import { taskAt, type BlockState, type Station } from './armTask'
 import { RobotArm } from './RobotArm'
 import {
+  BLOCK,
   COLORS,
   Pieces,
   TABLE,
@@ -73,12 +76,15 @@ export function RobotCorner({ position, onSelect }: Props) {
   const meshes = useMemo(() => buildWorkshop(position, floor), [position, floor])
   const top = floor + TABLE.height
 
-  // Station A is holding a block over the tray, station B is reaching down for the next one.
-  const [a, b] = STATIONS
-  const poses = [
-    reach([TRAY_AT[0] - ARM_AT, 0.16, TRAY_AT[1]], BLOCK_GRIP),
-    reach([PICK_AT[0] - ARM_AT, 0.03, PICK_AT[1]], 0.1),
-  ]
+  // Both arms do the same task (armTask.ts), each with its own block, out of step.
+  const tasks = useMemo(
+    () =>
+      STATIONS.map((_, i) => ({
+        poseAt: (time: number) => taskAt(TASK, time, i + 1).pose,
+        blockAt: (time: number) => taskAt(TASK, time, i + 1).block,
+      })),
+    [],
+  )
 
   return (
     <group position={position}>
@@ -88,8 +94,12 @@ export function RobotCorner({ position, onSelect }: Props) {
         </mesh>
       ))}
 
-      <RobotArm position={[a.x + ARM_AT, top, a.z]} pose={poses[0]} accent={a.color} holding={COLORS.red} glow={glow} />
-      <RobotArm position={[b.x + ARM_AT, top, b.z]} pose={poses[1]} accent={b.color} glow={glow} />
+      {STATIONS.map((s, i) => (
+        <group key={i} position={[s.x + ARM_AT, top, s.z]}>
+          <RobotArm position={[0, 0, 0]} poseAt={tasks[i]!.poseAt} accent={s.color} glow={glow} />
+          <TaskBlock stateAt={tasks[i]!.blockAt} color={TASK_BLOCKS[i]!} glow={glow} />
+        </group>
+      ))}
 
       {/* The hitboxes catch hover and clicks for the whole zone. visible={false}: not
           drawn, but the pointer still hits them. */}
@@ -102,8 +112,35 @@ export function RobotCorner({ position, onSelect }: Props) {
   )
 }
 
-// Gap between the fingers when holding a block: a little less than the block, so they grip it.
-const BLOCK_GRIP = 0.05
+// The task in arm coordinates (the arm's base at the origin, on the table top): the block
+// starts at the pick spot, and goes into the tray (whose floor is 1 cm up).
+const TASK: Station = {
+  pick: [PICK_AT[0] - ARM_AT, 0, PICK_AT[1]],
+  tray: [TRAY_AT[0] - ARM_AT, 0.01, TRAY_AT[1]],
+}
+// The colour of the block each arm works with.
+const TASK_BLOCKS = [COLORS.red, COLORS.green]
+
+// The block an arm is working with. Every frame it asks where it is now (`stateAt`), so it
+// moves with the arm, falls when it slips, and shrinks and grows between tries.
+function TaskBlock({ stateAt, color, glow }: { stateAt: (time: number) => BlockState; color: string; glow: number }) {
+  const ref = useRef<THREE.Mesh>(null)
+  useFrame(({ clock }) => {
+    const mesh = ref.current
+    if (!mesh) return
+    const { position, turn, tilt, scale } = stateAt(clock.elapsedTime)
+    mesh.position.set(...position)
+    mesh.rotation.set(0, turn, tilt)
+    mesh.scale.setScalar(Math.max(scale, 0.001))
+    mesh.visible = scale > 0.001
+  })
+  return (
+    <mesh ref={ref} castShadow>
+      <boxGeometry args={[BLOCK, BLOCK, BLOCK]} />
+      <Paint color={color} emissive={color} glow={glow} />
+    </mesh>
+  )
+}
 
 // The pad's top: just above the highest ground under it, so it never disappears into a bump.
 function padHeight(origin: Vec3) {
@@ -135,10 +172,10 @@ function buildWorkshop(origin: Vec3, floor: number) {
   shelf(p, floor, (SHED.front + SHED.back) / 2 + 0.6, SHED.width / 2 - 0.3)
 
   // The two test stations: tape on the floor, a table, blocks and a tray. Both have the
-  // same task: one block in the tray already and one dropped on the floor.
+  // same task: one block in the tray already and one dropped on the floor. The block each
+  // arm is moving isn't here: it moves, so it's its own mesh (TaskBlock).
   const top = floor + TABLE.height
   const startBlocks: [string, number, number][] = [
-    [COLORS.green, 0, 0], // station B's fingers are around this one
     [COLORS.yellow, 0.08, -0.07],
     [COLORS.blue, -0.08, 0.07],
   ]

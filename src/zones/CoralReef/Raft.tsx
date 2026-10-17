@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
+import { Bobbing } from '../../scene/Bobbing'
 import type { Vec3 } from '../../scene/layout'
 import { Paint } from './Paint'
 import { COLORS, groundY, stick } from './parts'
@@ -41,67 +42,70 @@ export function Raft({ origin, position, glow }: Props) {
 
   return (
     <group position={position}>
-      {/* Deck: one slab with dark seams between the planks. */}
-      <mesh position={[0, DECK_Y - 0.06, 0]} castShadow receiveShadow>
-        <boxGeometry args={[SIZE, 0.12, SIZE]} />
-        <Paint color={COLORS.wood} glow={glow} />
-      </mesh>
-      {[-1, -0.5, 0, 0.5, 1].map((x) => (
-        <mesh key={x} position={[x * 1.2, DECK_Y + 0.001, 0]}>
-          <boxGeometry args={[0.04, 0.002, SIZE]} />
-          <Paint color={COLORS.woodDark} glow={glow} />
+      {/* The raft floats; the anchor block on the seabed stays put. */}
+      <Bobbing height={0.05} roll={0.025} pitch={0.02} period={4.3} phase={1}>
+        {/* Deck: one slab with dark seams between the planks. */}
+        <mesh position={[0, DECK_Y - 0.06, 0]} castShadow receiveShadow>
+          <boxGeometry args={[SIZE, 0.12, SIZE]} />
+          <Paint color={COLORS.wood} glow={glow} />
         </mesh>
-      ))}
+        {[-1, -0.5, 0, 0.5, 1].map((x) => (
+          <mesh key={x} position={[x * 1.2, DECK_Y + 0.001, 0]}>
+            <boxGeometry args={[0.04, 0.002, SIZE]} />
+            <Paint color={COLORS.woodDark} glow={glow} />
+          </mesh>
+        ))}
 
-      {/* Barrels lying under the deck, half in the water. */}
-      {[
-        [-0.8, -0.9],
-        [0.8, -0.9],
-        [-0.8, 0.9],
-        [0.8, 0.9],
-      ].map(([x, z]) => (
-        <mesh key={`${x},${z}`} position={[x, 0.12, z]} rotation={[0, 0, Math.PI / 2]} castShadow>
-          <cylinderGeometry args={[0.36, 0.36, 1.3, 12]} />
-          <Paint color={COLORS.barrel} glow={glow} />
+        {/* Barrels lying under the deck, half in the water. */}
+        {[
+          [-0.8, -0.9],
+          [0.8, -0.9],
+          [-0.8, 0.9],
+          [0.8, 0.9],
+        ].map(([x, z]) => (
+          <mesh key={`${x},${z}`} position={[x, 0.12, z]} rotation={[0, 0, Math.PI / 2]} castShadow>
+            <cylinderGeometry args={[0.36, 0.36, 1.3, 12]} />
+            <Paint color={COLORS.barrel} glow={glow} />
+          </mesh>
+        ))}
+
+        {ladder.map((g, i) => (
+          <mesh key={i} geometry={g}>
+            <Paint color={COLORS.metal} glow={glow} />
+          </mesh>
+        ))}
+
+        {/* Anchor line, down to the block on the seabed. */}
+        <mesh geometry={anchor.line}>
+          <Paint color={COLORS.white} glow={glow} />
         </mesh>
-      ))}
 
-      {ladder.map((g, i) => (
-        <mesh key={i} geometry={g}>
-          <Paint color={COLORS.metal} glow={glow} />
+        {/* Flag pole in the north-west corner with the red "diver down" flag:
+            a white stripe from the top by the pole to the far bottom corner. */}
+        <mesh position={[-SIZE / 2 + 0.15, DECK_Y + POLE_HEIGHT / 2, -SIZE / 2 + 0.15]} castShadow>
+          <cylinderGeometry args={[0.05, 0.06, POLE_HEIGHT, 8]} />
+          <Paint color={COLORS.white} glow={glow} />
         </mesh>
-      ))}
+        <group position={[-SIZE / 2 + 0.15 + FLAG[0] / 2 + 0.05, DECK_Y + POLE_HEIGHT - FLAG[1] / 2 - 0.1, -SIZE / 2 + 0.15]}>
+          <mesh castShadow>
+            <boxGeometry args={[FLAG[0], FLAG[1], 0.02]} />
+            <Paint color={COLORS.flag} glow={glow} />
+          </mesh>
+          <mesh rotation={[0, 0, -Math.atan2(FLAG[1], FLAG[0])]}>
+            <boxGeometry args={[diagonal - 0.2, 0.22, 0.03]} />
+            <Paint color={COLORS.white} glow={glow} />
+          </mesh>
+        </group>
 
-      {/* Anchor line and a block on the seabed. */}
-      <mesh geometry={anchor.line}>
-        <Paint color={COLORS.white} glow={glow} />
-      </mesh>
+        {/* A dive tank lying on the deck. */}
+        <mesh position={[0.4, DECK_Y + 0.13, 0.7]} rotation={[0, 0.4, Math.PI / 2]} castShadow>
+          <capsuleGeometry args={[0.13, 0.5, 4, 10]} />
+          <Paint color={COLORS.tank} glow={glow} />
+        </mesh>
+      </Bobbing>
       <mesh position={[-2, anchor.bottom + 0.15, 1.5]}>
         <boxGeometry args={[0.4, 0.3, 0.4]} />
         <Paint color={COLORS.rock} glow={glow} />
-      </mesh>
-
-      {/* Flag pole in the north-west corner with the red "diver down" flag:
-          a white stripe from the top by the pole to the far bottom corner. */}
-      <mesh position={[-SIZE / 2 + 0.15, DECK_Y + POLE_HEIGHT / 2, -SIZE / 2 + 0.15]} castShadow>
-        <cylinderGeometry args={[0.05, 0.06, POLE_HEIGHT, 8]} />
-        <Paint color={COLORS.white} glow={glow} />
-      </mesh>
-      <group position={[-SIZE / 2 + 0.15 + FLAG[0] / 2 + 0.05, DECK_Y + POLE_HEIGHT - FLAG[1] / 2 - 0.1, -SIZE / 2 + 0.15]}>
-        <mesh castShadow>
-          <boxGeometry args={[FLAG[0], FLAG[1], 0.02]} />
-          <Paint color={COLORS.flag} glow={glow} />
-        </mesh>
-        <mesh rotation={[0, 0, -Math.atan2(FLAG[1], FLAG[0])]}>
-          <boxGeometry args={[diagonal - 0.2, 0.22, 0.03]} />
-          <Paint color={COLORS.white} glow={glow} />
-        </mesh>
-      </group>
-
-      {/* A dive tank lying on the deck. */}
-      <mesh position={[0.4, DECK_Y + 0.13, 0.7]} rotation={[0, 0.4, Math.PI / 2]} castShadow>
-        <capsuleGeometry args={[0.13, 0.5, 4, 10]} />
-        <Paint color={COLORS.tank} glow={glow} />
       </mesh>
     </group>
   )

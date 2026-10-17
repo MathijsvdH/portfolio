@@ -3,16 +3,18 @@ import type * as THREE from 'three'
 import type { Vec3 } from '../../scene/layout'
 import { useZoneHover } from '../../scene/useZoneHover'
 import { Paint } from './Paint'
+import { COLORS } from './parts'
 
 // Small building blocks for Home's clickable objects.
 
 export type Merged = { color: string; geometry: THREE.BufferGeometry }[]
 
-// The merged meshes of a builder (one per colour), lighting up by `glow`.
+// The merged meshes of a builder (one per colour), lighting up by `glow`. The palm
+// leaves sway in the wind.
 export function MergedMeshes({ meshes, glow }: { meshes: Merged; glow: number }) {
   return meshes.map(({ color, geometry }) => (
     <mesh key={color} geometry={geometry} castShadow receiveShadow>
-      <Paint color={color} emissive={color} glow={glow} />
+      <Paint color={color} emissive={color} glow={glow} sway={color === COLORS.palm} />
     </mesh>
   ))
 }

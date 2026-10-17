@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { heightAt } from '../../scene/islandShape'
-import type { Vec3 } from '../../scene/layout'
+import { REEF_AREA, type Vec3 } from '../../scene/layout'
 
 // Colours, shape builders and helpers for the reef. Zone coordinates: `origin` is the
 // zone's position (at sea level), +x is east, +z is south, y = 0 is the water surface.
@@ -25,6 +25,15 @@ export const COLORS = {
   white: '#fbf6ea',
   metal: '#9aa3a8',
   tank: '#f2c230',
+}
+
+// How far from the island's centre, in direction `a` (radians), the water first gets
+// deeper than `depth` metres.
+export function distanceToDepth(a: number, depth: number) {
+  for (let r = REEF_AREA.inner - 10; r < REEF_AREA.outer + 20; r += 0.5) {
+    if (heightAt(Math.cos(a) * r, Math.sin(a) * r) < -depth) return r
+  }
+  return REEF_AREA.outer + 20
 }
 
 // Ground height at a spot in zone coordinates (negative = under water).
