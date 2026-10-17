@@ -12,6 +12,16 @@ Format:
 
 ---
 
+## 2026-10-17: painted sky + Neutral tone mapping
+**Context:** The sea needed fog to hide its edge, and fog only blends in if its colour matches the sky at the horizon. With drei's realistic `Sky` and R3F's default ACES tone mapping, the colours didn't match and the pale sky came out grey.
+**Options:** Keep drei `Sky` and guess a fog colour; a simple gradient sky dome with the fog colour at the horizon; no tone mapping at all.
+**Choice:** A gradient sky dome (vertex colours, no shader) whose horizon colour is the fog colour, plus three.js Neutral tone mapping, which keeps the palette's colours bright instead of greying them like ACES. All colours live in `src/scene/palette.ts`.
+
+## 2026-10-17: personal info in a corner menu and a Home place
+**Context:** Besides projects, the site needs the usual portfolio things (about me, socials, contact, CV, skills). Visitors such as recruiters often want these fast, without exploring.
+**Options:** Only a place on the island; only a 2D menu; both.
+**Choice:** Both: an always-visible corner menu (also with a project list that flies to each zone) and a Home place on the south beach that opens the same content. Plus a simple text version without 3D for slow devices, people in a hurry and search engines. Content lives in `src/data/profile.ts`.
+
 ## 2026-10-17: real-size world with heightmap terrain
 **Context:** The first island (stacked flat terraces, ~22 m across) was a tabletop model: a person-sized marker was as tall as the hill. The goal is a Wuhu Island feel with life-size things (boat, fishing cabin) and a mountain that towers above everything.
 **Options:** Keep the small diorama and scale objects down; taller stacked terraces (`ExtrudeGeometry`); a heightmap terrain at real scale.

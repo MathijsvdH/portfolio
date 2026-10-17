@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import { heightAt } from './islandShape'
+import { PALETTE } from './palette'
 
 // The island is one "heightmap" mesh: a flat grid of points, each lifted to the
 // height that heightAt() gives for that spot. The landscape itself lives in islandShape.ts.
@@ -10,12 +11,12 @@ const SEGMENTS = 272 // grid squares per side: one point every 1.25 m
 const SEABED = -12 // depth of the open sea floor
 
 const COLORS = {
-  seabed: new THREE.Color('#c9b27c'),
-  sand: new THREE.Color('#e8d39a'),
-  grass: new THREE.Color('#6bb35a'),
-  grassDark: new THREE.Color('#4f9447'),
-  rock: new THREE.Color('#8a7b6a'),
-  rockHigh: new THREE.Color('#a39a8f'),
+  seabed: new THREE.Color(PALETTE.seabed),
+  sand: new THREE.Color(PALETTE.sand),
+  grass: new THREE.Color(PALETTE.grass),
+  grassDark: new THREE.Color(PALETTE.grassDark),
+  rock: new THREE.Color(PALETTE.rock),
+  rockHigh: new THREE.Color(PALETTE.rockHigh),
 }
 
 function smoothstep(edge0: number, edge1: number, x: number) {

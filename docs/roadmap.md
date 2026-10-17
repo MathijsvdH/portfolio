@@ -36,12 +36,25 @@ The ground is a natural landscape (slopes, rolling lowlands, rocky coast), not f
    W    │ 🤖 Robot    ⛰️      │ ⛵ Boat    E
         │ (west      mountain │ jetty on east beach
         │  headland)          │
-        │        🏖️ beach     │ 🐠 Reef (shallow lagoon in SE cove)
+        │   🏠 Home  🏖️ beach │ 🐠 Reef (shallow lagoon in SE cove)
         └─────────────────────┘
                  S  ← overview camera
 ```
 - Rocky mountain in the middle. The zones sit on the lowlands around it, so the
   mountain separates the sections.
+- **Home** on the south arrival beach (welcome hut or lighthouse, to decide): opens
+  About me, Socials & contact, CV and Skills. It's the first thing visitors see.
+
+## Personal info (not a project)
+Besides the projects, the site has the usual portfolio things:
+- **About me**, **Socials & contact**, **CV download** (PDF), **Skills & tools**.
+- Reachable in two ways: an always-visible **corner menu** (social icons, About,
+  Skills, CV, and a **project list** that flies the camera to a zone), and the **Home**
+  place on the island.
+- A **simple text version** of the site (no 3D, same content) for slow phones,
+  recruiters in a hurry and search engines.
+- Content goes in `src/data/profile.ts` (like `projects.ts`), with TODOs instead of
+  invented details.
 - **Internship zone: idea still open**, and no spot reserved. There is room on the
   south-west lowlands or on the mountain's shoulder. `src/scene/layout.ts` keeps all zone
   positions in one place, so adding a zone later is a small change.
@@ -56,33 +69,41 @@ The ground is a natural landscape (slopes, rolling lowlands, rocky coast), not f
   range and shadow area resized to the bigger world. Check scale with life-size markers.
   *(First try with small stacked terraces was too small: a person was as tall as the hill.)*
   Result: island ~240 m, peak ~88 m. Good enough for now; may get minor tweaks later.
-- [ ] 3. **Look pass**: palette, `hemisphereLight`, fog that hides the edge of the sea,
-  shadows tuned for the big area.
+- [x] 3. **Look pass**: colours in `src/scene/palette.ts`, `hemisphereLight` + warm sun,
+  painted gradient sky with matching fog (`src/scene/SkyAndFog.tsx`, replaces drei `Sky`),
+  Neutral tone mapping so colours stay bright, shadow type fixed.
 - [ ] 4. **Water pass**: shallow/deep colours, shore foam, a small wave shader animated
   with `useFrame`.
 
-**B. Navigation**
+**B. Navigation & menu**
 - [ ] 5. **Fly-to camera**: drei `CameraControls` instead of `OrbitControls`. The selected
   zone drives the camera to its viewpoint from `layout.ts`. "Back to island" button.
+- [ ] 6. **Corner menu**: always-visible 2D menu with social icons, About me, Skills &
+  tools, CV download, and a project list that flies to each zone. New
+  `src/data/profile.ts` for the personal content (TODOs).
 
-**C. Zones** (one step each, `new-zone` skill, simple shapes first, life-size)
-- [ ] 6. Boat + jetty
-- [ ] 7. Coral reef
-- [ ] 8. Wildlife
-- [ ] 9. Robot corner
+**C. Places** (one step each, `new-zone` skill, simple shapes first, life-size)
+- [ ] 7. Boat + jetty
+- [ ] 8. Coral reef
+- [ ] 9. Wildlife
+- [ ] 10. Robot corner
+- [ ] 11. Home on the south beach (opens About / Socials / CV / Skills, same as the menu)
 - [ ] Internship zone: extra step once the idea is decided.
 
 **D. Make it pretty**
-- [ ] 10. **Model pipeline**: one Kenney/Quaternius pack, compressed, loaded with drei
+- [ ] 12. **Model pipeline**: one Kenney/Quaternius pack, compressed, loaded with drei
   `useGLTF`, in `public/models/`, with credits. Scale models to metres.
-- [ ] 11. **Nature scatter**: trees, rocks, flowers with drei `Instances`, placed with
+- [ ] 13. **Nature scatter**: trees, rocks, flowers with drei `Instances`, placed with
   `heightAt`; zones kept clear.
-- [ ] 12. **Zone upgrades**: placeholder shapes → models, one zone per step.
-- [ ] 13. **Life**: sway, bobbing, birds, fish, the robot trying and failing (`useFrame`).
-- [ ] 14. **Labels**: hover name tags with drei `Html`, small signposts.
+- [ ] 14. **Zone upgrades**: placeholder shapes → models, one zone per step.
+- [ ] 15. **Life**: sway, bobbing, birds, fish, the robot trying and failing (`useFrame`).
+- [ ] 16. **Labels**: hover name tags with drei `Html`, small signposts.
 
 **E. Polish & ship**
-- [ ] 15. Loading screen (drei `useProgress`).
-- [ ] 16. Phone pass: lower `dpr`/shadows on small screens, terrain detail, touch check, panel layout.
-- [ ] 17. Content: fill `src/data/projects.ts` (text, images, links).
-- [ ] 18. Deploy (pick a host then).
+- [ ] 17. Loading screen (drei `useProgress`).
+- [ ] 18. Phone pass: lower `dpr`/shadows on small screens, terrain detail, touch check, panel layout.
+- [ ] 19. **Simple text version**: a plain page (no 3D) built from the same data files,
+  linked from the corner menu.
+- [ ] 20. Content: fill `src/data/projects.ts` and `src/data/profile.ts` (text, images,
+  links, social handles, CV PDF).
+- [ ] 21. Deploy (pick a host then).

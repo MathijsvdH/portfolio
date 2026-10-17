@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Sky } from '@react-three/drei'
+import * as THREE from 'three'
+import { OrbitControls } from '@react-three/drei'
 import { Island } from './scene/Island'
 import { Water } from './scene/Water'
 import { Lighting } from './scene/Lighting'
+import { SkyAndFog } from './scene/SkyAndFog'
 import { OVERVIEW } from './scene/layout'
 import { ProjectPanel } from './ui/ProjectPanel'
 import { projects, type ProjectId } from './data/projects'
@@ -14,8 +16,14 @@ export default function App() {
 
   return (
     <>
-      <Canvas shadows camera={{ position: OVERVIEW.position, fov: 45, near: 0.5, far: 5000 }}>
-        <Sky sunPosition={[50, 30, 20]} />
+      {/* shadows="percentage": smoothed shadow edges (the "soft" type no longer exists in three.js).
+          Neutral tone mapping keeps the palette's colours bright; the default (ACES) greys them out. */}
+      <Canvas
+        shadows="percentage"
+        gl={{ toneMapping: THREE.NeutralToneMapping }}
+        camera={{ position: OVERVIEW.position, fov: 45, near: 0.5, far: 5000 }}
+      >
+        <SkyAndFog />
         <Lighting />
         <Island />
         <Water />
