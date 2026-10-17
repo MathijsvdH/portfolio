@@ -25,3 +25,19 @@ export const PALETTE = {
   skyLight: '#bfe0ff', // light coming from the sky above
   groundLight: '#8a7a55', // light bouncing up from the ground
 }
+
+// Colours for the 3D models (models.ts), by the kit's material names. The kit's own colours
+// are pastel (teal leaves, salmon wood), so they're swapped for these to match the island.
+export const MODEL_COLORS: Record<string, string> = {
+  leafsGreen: '#4f9e3a',
+  leafsDark: '#3b7d3c', // pines
+  grass: '#62a84a', // bushes, grass, flower stems
+  woodBark: '#8a5a3a',
+  woodBarkDark: '#6e4a34',
+  woodInner: '#e3c493', // the cut face of stumps and logs
+  stone: '#a39a8c',
+  _defaultMat: '#a39a8c', // a few loose faces on some stones
+  colorRed: '#e2483a',
+  colorYellow: '#f5c234',
+  colorPurple: '#a774e0',
+}

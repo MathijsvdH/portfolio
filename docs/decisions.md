@@ -12,6 +12,16 @@ Format:
 
 ---
 
+## 2026-10-18: models packed into one file, compressed with meshopt, recoloured on load
+**Context:** Step 12 needed a way to get the Kenney Nature Kit's models into the site: small, to scale, and in the island's colours.
+**Options:** Copy the .glb files as they are (28 downloads, ~300 KB); one merged file compressed with Draco; one merged file compressed with meshopt. For colour: keep the kit's colours, or swap them by material name.
+**Choice:** One merged file with meshopt (100 KB). Its decoder comes with drei, while drei's Draco decoder is downloaded from Google's servers. A script (`scripts/models.mjs`) makes the file from a list in `src/scene/modelList.ts`, so adding a model is one line and one command. On load, each model is baked into plain `{ color, geometry }` parts in metres, with colours from `palette.ts`: the kit's materials are fully metallic (dark without reflections) and pastel teal and salmon, which clashed with the island.
+
+## 2026-10-18: the site starts on the Home beach, and the info lives in the objects
+**Context:** The first Home (a small hut on the south beach that opened an About panel) was easy to miss from the overview, and clicking it felt like the corner menu again. Home was meant to be the start.
+**Options:** A bigger landmark (lighthouse); start the camera on the beach; make the props themselves the content; a map board as a hub; go inside the hut.
+**Choice:** Start on the beach, with the props as the content (sign, notice board, mailbox postcards, painted from `profile.ts`) and an island map board whose pins fly to the zones. "Explore the island" lifts the camera to the overview. The corner menu stays as the quick way in. Going inside the hut could come later.
+
 ## 2026-10-17: own camera flight in an arc
 **Context:** Clicking a zone flies the camera there. A straight line between two viewpoints can go through the mountain (wildlife ↔ reef goes 14 m underground, overview → wildlife skims it by 3 m).
 **Options:** CameraControls' built-in `setLookAt` transition (straight line); flying via a fixed high waypoint (stops halfway); our own flight in `useFrame` that lifts the middle of the path in an arc.
@@ -26,11 +36,6 @@ Format:
 **Context:** The sea needed fog to hide its edge, and fog only blends in if its colour matches the sky at the horizon. With drei's realistic `Sky` and R3F's default ACES tone mapping, the colours didn't match and the pale sky came out grey.
 **Options:** Keep drei `Sky` and guess a fog colour; a simple gradient sky dome with the fog colour at the horizon; no tone mapping at all.
 **Choice:** A gradient sky dome (vertex colours, no shader) whose horizon colour is the fog colour, plus three.js Neutral tone mapping, which keeps the palette's colours bright instead of greying them like ACES. All colours live in `src/scene/palette.ts`.
-
-## 2026-10-18: the site starts on the Home beach, and the info lives in the objects
-**Context:** The first Home (a small hut on the south beach that opened an About panel) was easy to miss from the overview, and clicking it felt like the corner menu again. Home was meant to be the start.
-**Options:** A bigger landmark (lighthouse); start the camera on the beach; make the props themselves the content; a map board as a hub; go inside the hut.
-**Choice:** Start on the beach, with the props as the content (sign, notice board, mailbox postcards, painted from `profile.ts`) and an island map board whose pins fly to the zones. "Explore the island" lifts the camera to the overview. The corner menu stays as the quick way in. Going inside the hut could come later.
 
 ## 2026-10-17: personal info in a corner menu and a Home place
 **Context:** Besides projects, the site needs the usual portfolio things (about me, socials, contact, CV, skills). Visitors such as recruiters often want these fast, without exploring.

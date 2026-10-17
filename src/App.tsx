@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { Suspense, useMemo, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Island } from './scene/Island'
@@ -8,6 +8,7 @@ import { SkyAndFog } from './scene/SkyAndFog'
 import { CameraRig } from './scene/CameraRig'
 import { ScreenAnchors } from './scene/ScreenAnchors'
 import { ZoneMarkers } from './scene/ZoneMarkers'
+import { ModelShelf } from './scene/ModelShelf'
 import { HOME, OVERVIEW, ZONES, atHome, isProject, type Place } from './scene/layout'
 import { ProjectPanel } from './ui/ProjectPanel'
 import { BackButton } from './ui/BackButton'
@@ -20,6 +21,9 @@ import { RobotCorner } from './zones/RobotCorner/RobotCorner'
 import { Home } from './zones/Home/Home'
 import { homeLabels, homeView } from './zones/Home/spots'
 import { projects, type ProjectId } from './data/projects'
+
+// TEMPORARY: http://localhost:5173/?models shows all 3D models in a row behind Home.
+const SHOW_MODELS = new URLSearchParams(window.location.search).has('models')
 
 export default function App() {
   // Where the camera is: a project zone, Home (the start view on the beach), one of Home's
@@ -79,6 +83,9 @@ export default function App() {
         <Wildlife position={ZONES['animal-classification']!.position} onSelect={select} />
         <RobotCorner position={ZONES.robotics!.position} onSelect={select} />
         <Home position={HOME.position} place={selected} onSelect={select} />
+
+        {/* Suspense: what's inside waits for the model file, the rest of the island doesn't. */}
+        <Suspense fallback={null}>{SHOW_MODELS && <ModelShelf />}</Suspense>
 
         <CameraRig view={view} />
         <ScreenAnchors points={labelPoints} elements={labelElements} />

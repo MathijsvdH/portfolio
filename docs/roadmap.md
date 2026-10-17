@@ -156,8 +156,18 @@ Besides the projects, the site has the usual portfolio things:
 - [ ] Internship zone: extra step once the idea is decided.
 
 **D. Make it pretty**
-- [ ] 12. **Model pipeline**: one Kenney/Quaternius pack, compressed, loaded with drei
-  `useGLTF`, in `public/models/`, with credits. Scale models to metres.
+- [x] 12. **Model pipeline**: Kenney's Nature Kit (CC0), 28 models packed into one file,
+  `public/models/nature.glb` (294 KB → 100 KB).
+  - `src/scene/modelList.ts`: which models, and each one's real height in metres.
+  - `scripts/models.mjs`: packs exactly those with gltf-transform (run once via npx, not a
+    dependency): merge, dedup, prune, meshopt compression. Run it again after editing the list.
+  - `src/scene/models.ts`: `useModels()` / `useModel(name)` load the file with drei `useGLTF`
+    and bake each model into `{ color, geometry }` parts in metres, standing on y = 0 (the
+    same shape as the zones' `Pieces`). The kit's materials (metallic, pastel colours) are
+    swapped for `MODEL_COLORS` in `palette.ts`. `<Model model="tree_oak" />` draws one.
+  - Temporary check: `/?models` lines all models up behind Home (`ModelShelf.tsx`).
+    Remove it in step 13.
+  - Credits: README and `public/models/LICENSE-kenney-nature-kit.txt`.
 - [ ] 13. **Nature scatter**: trees, rocks, flowers with drei `Instances`, placed with
   `heightAt`; zones kept clear.
 - [ ] 14. **Zone upgrades**: placeholder shapes → models, one zone per step.
