@@ -12,6 +12,11 @@ Format:
 
 ---
 
+## 2026-10-17: water shader with a baked depth map
+**Context:** The sea was one flat blue colour. The Wuhu look needs turquoise shallows, deep blue further out and foam at the shore, and the water must know how deep it is everywhere for that.
+**Options:** three.js's example `Water` (realistic reflections, wrong style, heavy); reading the depth buffer every frame (complex, extra render pass); measuring the depth once with `terrainHeight()` and storing it in a small texture the shader reads.
+**Choice:** A small custom shader that reads a 384×384 depth map baked at load. It's cheap on phones, the foam follows the real coastline, and it keeps the cartoon style. Waves are drawn (moving foam bands and ripple lines) instead of moving the surface up and down, so the water stays one flat mesh.
+
 ## 2026-10-17: painted sky + Neutral tone mapping
 **Context:** The sea needed fog to hide its edge, and fog only blends in if its colour matches the sky at the horizon. With drei's realistic `Sky` and R3F's default ACES tone mapping, the colours didn't match and the pale sky came out grey.
 **Options:** Keep drei `Sky` and guess a fog colour; a simple gradient sky dome with the fog colour at the horizon; no tone mapping at all.

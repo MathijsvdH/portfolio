@@ -10,8 +10,10 @@ export const PALETTE = {
   rock: '#9a8a76',
   rockHigh: '#b8aea2',
 
-  // Water (refined in the water pass)
-  water: '#2b9fd0',
+  // Water: light turquoise in the shallows, deep blue further out, white foam
+  waterShallow: '#3fd0c8',
+  waterDeep: '#1a74c0',
+  foam: '#ffffff',
 
   // Sky: the horizon colour is also the fog colour, so far things fade into the sky
   skyTop: '#3d8fe0',

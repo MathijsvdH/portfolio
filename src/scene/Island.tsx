@@ -1,14 +1,13 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
-import { heightAt } from './islandShape'
+import { SEABED, TERRAIN_SIZE, terrainHeight } from './islandShape'
 import { PALETTE } from './palette'
 
 // The island is one "heightmap" mesh: a flat grid of points, each lifted to the
-// height that heightAt() gives for that spot. The landscape itself lives in islandShape.ts.
+// height that terrainHeight() gives for that spot. The landscape itself lives in islandShape.ts.
 
-const SIZE = 340 // metres covered by the grid (the island is ~240 m across)
+const SIZE = TERRAIN_SIZE // metres covered by the grid (the island is ~240 m across)
 const SEGMENTS = 272 // grid squares per side: one point every 1.25 m
-const SEABED = -12 // depth of the open sea floor
 
 const COLORS = {
   seabed: new THREE.Color(PALETTE.seabed),
@@ -44,14 +43,10 @@ function terrainGeometry() {
   const geometry = new THREE.PlaneGeometry(SIZE, SIZE, SEGMENTS, SEGMENTS)
   geometry.rotateX(-Math.PI / 2) // the plane starts standing up; lay it flat
 
-  // Lift every grid point to the ground height at its spot. Near the grid's edge,
-  // sink it to the seabed depth so it meets the flat seabed without a step.
+  // Lift every grid point to the ground height at its spot.
   const pos = geometry.attributes.position
   for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i)
-    const z = pos.getZ(i)
-    const edge = smoothstep(SIZE / 2 - 30, SIZE / 2, Math.max(Math.abs(x), Math.abs(z)))
-    pos.setY(i, THREE.MathUtils.lerp(heightAt(x, z), SEABED, edge))
+    pos.setY(i, terrainHeight(pos.getX(i), pos.getZ(i)))
   }
   geometry.computeVertexNormals() // recalculate which way each point faces, for lighting
 

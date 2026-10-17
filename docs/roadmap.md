@@ -72,8 +72,11 @@ Besides the projects, the site has the usual portfolio things:
 - [x] 3. **Look pass**: colours in `src/scene/palette.ts`, `hemisphereLight` + warm sun,
   painted gradient sky with matching fog (`src/scene/SkyAndFog.tsx`, replaces drei `Sky`),
   Neutral tone mapping so colours stay bright, shadow type fixed.
-- [ ] 4. **Water pass**: shallow/deep colours, shore foam, a small wave shader animated
-  with `useFrame`.
+- [x] 4. **Water pass**: own water shader (`src/scene/Water.tsx`): turquoise and
+  see-through in the shallows, deep blue further out, a foam line at the shore with foam
+  bands rolling in, and drifting ripple lines, animated with `useFrame`. Depth comes from
+  a small depth map baked once from `terrainHeight()`. The water surface stays flat (no
+  moving geometry), which keeps it cheap.
 
 **B. Navigation & menu**
 - [ ] 5. **Fly-to camera**: drei `CameraControls` instead of `OrbitControls`. The selected

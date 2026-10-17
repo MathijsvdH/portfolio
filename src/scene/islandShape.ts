@@ -123,6 +123,8 @@ function peakHeight(x: number, z: number, p: Peak) {
   return p.height * cone * rocks
 }
 
+export const SEABED = -12 // depth of the open sea floor (m)
+
 // Ground height (y, metres) at a spot. Below 0 is under water.
 export function heightAt(x: number, z: number) {
   const a = Math.atan2(z, x)
@@ -134,7 +136,7 @@ export function heightAt(x: number, z: number) {
   if (inland < 0) {
     // Sea floor: drops away from the coast, but stays shallow in the south-east lagoon.
     const drop = 0.35 - 0.3 * bump(a, SOUTH_EAST) ** 3
-    h = Math.max(-12, -0.6 + inland * drop)
+    h = Math.max(SEABED, -0.6 + inland * drop)
   } else {
     const bw = beachWidth(a)
     const beach = -0.6 + 2.6 * smoothstep(0, bw, inland) // sand up to ~2 m
@@ -144,6 +146,19 @@ export function heightAt(x: number, z: number) {
   }
 
   return h + peakHeight(x, z, MOUNTAIN) + peakHeight(x, z, SHOULDER)
+}
+
+// The terrain mesh covers a square of this size (m), centred on the island.
+// Outside it there is only flat seabed.
+export const TERRAIN_SIZE = 340
+
+// Like heightAt, but near the edge of the terrain square the ground sinks to the
+// seabed depth, so the terrain meets the flat seabed without a step.
+// Used by both the terrain and the water (for its depth colours).
+export function terrainHeight(x: number, z: number) {
+  const edge = smoothstep(TERRAIN_SIZE / 2 - 30, TERRAIN_SIZE / 2, Math.max(Math.abs(x), Math.abs(z)))
+  const h = heightAt(x, z)
+  return h + (SEABED - h) * edge
 }
 
 // How far a square of `size` metres around a spot goes up and down. Small = flat
