@@ -9,11 +9,17 @@ Each project gets a place on the island. Update the status column as zones get b
 | Boat | Knot-tying project | Boat at a jetty, with rope and knots on deck | todo |
 | Wildlife | Animal classification | Animals spread over the island, maybe with labels when you hover | todo |
 | Robot corner | Robotics project | A robot in a corner that is visibly "learning" (trying, failing, improving) | todo |
-| Mirror | Internship | A mirror that stands for reflection on the internship | todo |
+| (open) | Internship | Idea still open, to decide. Free spot: the central hilltop | todo |
 
 Status values: `todo`, `in progress`, `placeholder` (works, but simple shapes), `done`.
 
+## Answered
+- **Where does each zone sit?** See the map in `docs/roadmap.md`: Wildlife north,
+  Boat at a jetty on the east beach, Coral reef in a shallow lagoon to the south-east,
+  Robot corner on a rocky plateau in the west, central hilltop left open.
+- **How does a visitor move?** Click a zone and the camera flies there; a "Back to
+  island" button returns to the overview. (See `docs/decisions.md`.)
+
 ## Open questions
-- Where on the island does each zone sit? (Sketch a map first.)
-- How does a visitor move: free orbit camera, or click a zone and the camera flies there?
+- What is the internship zone's idea? (The mirror is dropped for now.)
 - What does the project panel show: text, images, video, links?

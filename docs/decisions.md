@@ -12,6 +12,16 @@ Format:
 
 ---
 
+## 2026-10-17: free CC0 low-poly model packs for the art
+**Context:** The island needs a cosy, Animal Crossing / Wuhu Island look (trees, rocks, boat, robot, animals).
+**Options:** Build everything from three.js primitives in code; free CC0 packs (Kenney.nl, Quaternius); model own assets in Blender.
+**Choice:** CC0 packs. They look good immediately, are small and fast, and need no new npm packages. Models get compressed before going into `public/models/`. Simple primitives are still used for first placeholder versions of zones.
+
+## 2026-10-17: click a zone, camera flies there
+**Context:** Needed a way for visitors to move around the island and reach projects.
+**Options:** Free orbit camera only; click a zone and the camera glides there (like the Wii Sports Resort island menu); a walking character (like Animal Crossing).
+**Choice:** Click-to-fly with drei `CameraControls`. Simplest to build, works well on phones, and gets visitors to the projects fastest. A walking character could be added later as an optional mode.
+
 ## 2026-10-16: AI-assisted development with Claude Code
 **Context:** Hand-coding the 3D site in R3F was slow, and the grant goal is a complete interactive island.
 **Options:** Keep hand-coding; prompt a chat LLM and paste code; use an agent (Claude Code) in the repo with rules in files.
