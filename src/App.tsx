@@ -1,18 +1,23 @@
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
-import { OrbitControls } from '@react-three/drei'
 import { Island } from './scene/Island'
 import { Water } from './scene/Water'
 import { Lighting } from './scene/Lighting'
 import { SkyAndFog } from './scene/SkyAndFog'
-import { OVERVIEW } from './scene/layout'
+import { CameraRig } from './scene/CameraRig'
+import { ZoneMarkers } from './scene/ZoneMarkers'
+import { OVERVIEW, ZONES } from './scene/layout'
 import { ProjectPanel } from './ui/ProjectPanel'
+import { BackButton } from './ui/BackButton'
 import { projects, type ProjectId } from './data/projects'
 
 export default function App() {
   // Which project panel is open. Zones call setSelected(id) on click.
   const [selected, setSelected] = useState<ProjectId | null>(null)
+
+  // Where the camera should be: the open zone's viewpoint, or the whole island.
+  const view = selected ? (ZONES[selected]?.camera ?? OVERVIEW) : OVERVIEW
 
   return (
     <>
@@ -28,19 +33,18 @@ export default function App() {
         <Island />
         <Water />
 
-        {/* Zones go here, e.g. <CoralReef position={[8, 0, 2]} onSelect={setSelected} /> */}
+        {/* Zones go here, e.g. <CoralReef position={ZONES['coral-reef'].position} onSelect={setSelected} />.
+            Until then, temporary posts mark the zone spots. */}
+        <ZoneMarkers onSelect={setSelected} />
 
-        <OrbitControls
-          target={OVERVIEW.target}
-          minDistance={30}
-          maxDistance={550}
-          maxPolarAngle={Math.PI / 2.2} // stop the camera going below the water
-          enablePan={false}
-        />
+        <CameraRig view={view} />
       </Canvas>
 
       {selected && (
-        <ProjectPanel project={projects[selected]} onClose={() => setSelected(null)} />
+        <>
+          <ProjectPanel project={projects[selected]} onClose={() => setSelected(null)} />
+          <BackButton onClick={() => setSelected(null)} />
+        </>
       )}
     </>
   )

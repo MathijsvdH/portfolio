@@ -79,8 +79,12 @@ Besides the projects, the site has the usual portfolio things:
   moving geometry), which keeps it cheap.
 
 **B. Navigation & menu**
-- [ ] 5. **Fly-to camera**: drei `CameraControls` instead of `OrbitControls`. The selected
-  zone drives the camera to its viewpoint from `layout.ts`. "Back to island" button.
+- [x] 5. **Fly-to camera**: drei `CameraControls` instead of `OrbitControls`
+  (`src/scene/CameraRig.tsx`). The selected zone drives the camera to its viewpoint from
+  `layout.ts`, in an arc that stays 20 m above the ground (so it never flies through the
+  mountain). "Back to island" button. Temporary marker posts (`src/scene/ZoneMarkers.tsx`)
+  stand in for the zones until they're built. On narrow phone screens the camera steps back
+  so the island fits.
 - [ ] 6. **Corner menu**: always-visible 2D menu with social icons, About me, Skills &
   tools, CV download, and a project list that flies to each zone. New
   `src/data/profile.ts` for the personal content (TODOs).

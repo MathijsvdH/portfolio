@@ -20,6 +20,9 @@ Add one zone to the island, following the zone convention in CLAUDE.md.
    - Hover: cursor becomes a pointer (drei `useCursor`) and the zone highlights slightly.
    - Click: calls `onSelect('<project-id>')`. Stop event propagation so clicks don't hit zones behind it.
 4. **Add content** for the project in `src/data/projects.ts` if it's missing. Use placeholder text marked `TODO` instead of inventing project details.
-5. **Place it** in `src/App.tsx` inside the Canvas, passing `onSelect={setSelected}`.
+5. **Place it** in `src/App.tsx` inside the Canvas, at its position from `src/scene/layout.ts`
+   (`ZONES['<project-id>'].position`), passing `onSelect={setSelected}`. Add the id to `BUILT`
+   in `src/scene/ZoneMarkers.tsx` so its temporary marker post disappears. Clicking it flies the
+   camera to `ZONES['<project-id>'].camera`; adjust that viewpoint if the zone isn't framed well.
 6. **Verify:** run `npm run build`. Then open the dev server with the browser tool, take a screenshot, and check the zone is visible and the panel opens on click.
 7. **Update** the zone's status in `docs/zones.md` (`placeholder` or `done`).

@@ -12,6 +12,11 @@ Format:
 
 ---
 
+## 2026-10-17: own camera flight in an arc
+**Context:** Clicking a zone flies the camera there. A straight line between two viewpoints can go through the mountain (wildlife ↔ reef goes 14 m underground, overview → wildlife skims it by 3 m).
+**Options:** CameraControls' built-in `setLookAt` transition (straight line); flying via a fixed high waypoint (stops halfway); our own flight in `useFrame` that lifts the middle of the path in an arc.
+**Choice:** Own flight in `src/scene/CameraRig.tsx`: before flying, sample the straight line against `heightAt()` and lift the arc just enough to stay 20 m above the ground. Smooth, never clips, and short hops stay low. Done before the zones, so every zone step can be tested by clicking it.
+
 ## 2026-10-17: water shader with a baked depth map
 **Context:** The sea was one flat blue colour. The Wuhu look needs turquoise shallows, deep blue further out and foam at the shore, and the water must know how deep it is everywhere for that.
 **Options:** three.js's example `Water` (realistic reflections, wrong style, heavy); reading the depth buffer every frame (complex, extra render pass); measuring the depth once with `terrainHeight()` and storing it in a small texture the shader reads.

@@ -21,7 +21,8 @@ Status values: `todo`, `in progress`, `placeholder` (works, but simple shapes), 
   the middle, Wildlife north, Boat at a jetty on the east beach, Coral reef in the
   south-east cove, Robot corner on the west headland.
 - **How does a visitor move?** Click a zone and the camera flies there; a "Back to
-  island" button returns to the overview. (See `docs/decisions.md`.)
+  island" button returns to the overview. (See `docs/decisions.md`.) Built in step 5; until a
+  zone exists, a temporary marker post stands at its spot.
 
 ## Open questions
 - What is the internship zone's idea? (The mirror is dropped for now.)
